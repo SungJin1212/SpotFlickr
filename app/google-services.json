@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "194706633571",
+    "firebase_url": "https://spotflickr-10539.firebaseio.com",
+    "project_id": "spotflickr-10539",
+    "storage_bucket": "spotflickr-10539.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194706633571:android:4512bd49237e2495",
+        "android_client_info": {
+          "package_name": "com.example.lee.spotflickr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGk6SuGOo-0DpDC10qmXXZHJBoPQRrIXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "194706633571-7a6ilnseson7cmsc79kfk9ufb3i48vqf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
