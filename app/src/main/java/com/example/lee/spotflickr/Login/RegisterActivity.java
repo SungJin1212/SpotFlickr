@@ -27,8 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import com.example.lee.spotflickr.DatabaseClasses.User;
 
-import java.util.Objects;
-
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     //define view objects
@@ -99,12 +97,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String password = etPassword.getText().toString().trim();
         final String nickname = etNickname.getText().toString().trim();
         //email과 password가 비었는지 아닌지를 체크 한다.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(email) || !(email.contains("@"))) {
             Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Please enter a password", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(password) || (password.length() < 6)) {
+            Toast.makeText(this, "Please enter a password longer than 6 characters", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -148,13 +146,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 }
                             });
                             Log.d("Debug","Success");
-                            //RegisterNickname(nickname); // 유저 닉네임 등록
-
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             //에러발생시
-                            tvMessage.setText("Error\n - Email already registered\n -Password has to be at least 6 characters long\n");
-                            toastMessage("Registration Error!");
+                            tvMessage.setText("Registration Error!\nEmail is already in use.");
                         }
                         progressDialog.dismiss();
                     }
@@ -163,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void RegisterNickname(String name) { //닉네임 기본 프로필 사진 등록
+/*    private void RegisterNickname(String name) { //닉네임 기본 프로필 사진 등록
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
@@ -178,7 +173,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         }
                     }
                 });
-    }
+    }*/
 
     //button click event
     @Override
