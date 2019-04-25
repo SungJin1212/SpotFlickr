@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SpotFlickr </string>
+    <string name="Login">Login </string>
+    <string name="Signup">Signup</string>
+    <string name="ChangePassword">ChangePassword</string>
+    <string name="FindingPassword">FindingPassword</string>
+    <string name="Done">Done</string>
+    <string name="Back">Back</string>
+
+</resources>
