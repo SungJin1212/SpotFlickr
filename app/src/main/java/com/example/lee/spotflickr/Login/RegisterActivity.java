@@ -130,6 +130,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 toastMessage("No user ID created");
                             }
                             //finish();
+                            RegisterNickname(nickname);
                             userObj = new User();
                             userObj.setEmail(email);
                             userObj.setNickname(nickname);
@@ -138,15 +139,26 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()){
-                                        toastMessage("Successful registration!");
+                                        firebaseAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    toastMessage("Successful registration! Please verify account by clicking on the link in the email sent to " + email);
+                                                    Log.d("Debug","Success");
+                                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                                                }
+                                                else {
+                                                    toastMessage(task.getException().getMessage());
+                                                }
+                                            }
+                                        });
+
                                     }
                                     else{
-                                        toastMessage("Failed to register");
+                                        toastMessage(task.getException().getMessage());
                                     }
                                 }
                             });
-                            Log.d("Debug","Success");
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             //에러발생시
                             tvMessage.setText("Registration Error!\nEmail is already in use.");
@@ -158,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-/*    private void RegisterNickname(String name) { //닉네임 기본 프로필 사진 등록
+    private void RegisterNickname(String name) { //닉네임 기본 프로필 사진 등록
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
@@ -173,7 +185,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         }
                     }
                 });
-    }*/
+    }
 
     //button click event
     @Override

@@ -19,6 +19,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,12 +34,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ProgressDialog progressDialog;
     //define firebase object
     FirebaseAuth firebaseAuth;
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         init();
     }
 
@@ -50,7 +53,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void setFirebase() {
         //initializig firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
-
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("User");
         if (firebaseAuth.getCurrentUser() != null) {
             //이미 로그인 되었다면 이 액티비티를 종료함
             finish();
@@ -83,15 +87,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = etPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "email을 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            toastMessage("Please enter your email address");
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "password를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+            toastMessage("Please enter your password");
             return;
         }
 
-        progressDialog.setMessage("로그인중입니다. 잠시 기다려 주세요...");
+        progressDialog.setMessage("Signing in, please wait...");
         progressDialog.show();
 
         //logging in the user
@@ -101,11 +105,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressDialog.dismiss();
                         if (task.isSuccessful()) {
-                            finish();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            if(firebaseAuth.getCurrentUser().isEmailVerified()) {
+                                myRef.child(firebaseAuth.getCurrentUser().getUid()).child("validated").setValue(true);
+                                finish();
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            } else {
+                                toastMessage("You need to verify your account by clicking the link in the email that was sent to you");
+                            }
                         } else {
-                            Toast.makeText(getApplicationContext(), "로그인 실패!", Toast.LENGTH_LONG).show();
-                            tvMessage.setText("로그인 실패 유형\n - password가 맞지 않습니다.\n -서버에러");
+                            toastMessage(task.getException().getMessage());
+                            tvMessage.setText("Login failure\n - Incorrect password.\n - Server fail");
                         }
                     }
                 });
@@ -125,5 +134,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             finish();
             startActivity(new Intent(this, FindActivity.class));
         }
+    }
+
+    public void toastMessage(String message){
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 }
