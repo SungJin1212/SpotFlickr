@@ -143,6 +143,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()){
+                                                    finish();
                                                     toastMessage("Successful registration! Please verify account by clicking on the link in the email sent to " + email);
                                                     Log.d("Debug","Success");
                                                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
