@@ -4,7 +4,7 @@ public class User {
 
     private String email;
     private String nickname;
-    private Boolean validated;
+    private boolean validated;
 
     public User() {
     }
@@ -24,13 +24,13 @@ public class User {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
-
-    public Boolean getValidated() {
+    public boolean isValidated() {
         return validated;
     }
 
-    public void setValidated(Boolean validated) {
+    public void setValidated(boolean validated) {
         this.validated = validated;
     }
+
 }
 

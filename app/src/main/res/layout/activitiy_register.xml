@@ -24,35 +24,35 @@
         android:textColor="@color/text_color_default" />
 
     <EditText
-        style="@style/BaseEditText"
         android:id="@+id/editTextEmail"
+        style="@style/BaseEditText"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:hint="Enter ID"
+        android:hint="Email"
         android:inputType="textEmailAddress"
         android:textColor="@color/text_color_default" />
 
     <EditText
-        style="@style/BaseEditText"
         android:id="@+id/editTextPassword"
+        style="@style/BaseEditText"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:hint="Enter password"
+        android:hint="Password"
         android:inputType="textPassword"
         android:textColor="@color/text_color_default" />
 
     <EditText
-        style="@style/BaseEditText"
         android:id="@+id/editTextNickname"
+        style="@style/BaseEditText"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:hint="Enter nickname"
+        android:hint="Nickname"
         android:textColor="@color/text_color_default" />
 
 
@@ -72,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:text="If you are a member, please log in here."
+        android:text="If you already have an account, please log in"
         android:textAlignment="center"
         android:textColor="@color/text_color_default" />
 
