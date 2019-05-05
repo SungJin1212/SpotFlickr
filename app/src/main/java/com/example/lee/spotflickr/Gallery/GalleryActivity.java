@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -125,6 +126,14 @@ public class GalleryActivity extends AppCompatActivity {
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) gvGallery
                 .getLayoutParams();
         mlp.setMargins(0, gvGallery.getHorizontalSpacing(), 0, 0);
+
+        gvGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //TODO: move to ImageActivity
+                Log.d("Debug", "HJ Debug: "+position);
+            }
+        });
         return true;
     }
 
