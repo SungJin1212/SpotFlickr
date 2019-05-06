@@ -32,12 +32,14 @@ import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
 
+    private Context context = this;
     private Button btn;
     int PICK_IMAGE_MULTIPLE = 1;
     private GridView gvGallery;
     private GalleryAdapter galleryAdapter;
 
     File currentStorageDir;           // user storage directory
+    String[] imgs;
 
     public String getFileName(Uri uri) {
         String result = null;
@@ -112,7 +114,7 @@ public class GalleryActivity extends AppCompatActivity {
     // refresh grid view based on user storage directory(=currentStorageDir)
     protected boolean loadCustomGallery() {
         File file = currentStorageDir;
-        String[] imgs = file.list();
+        imgs = file.list();
         ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
         for(int i=0; i<imgs.length; i++){
             Log.d("Debug","HJ debug success file count-"+i+": "+imgs[i]);
@@ -131,7 +133,14 @@ public class GalleryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //TODO: move to ImageActivity
-                Log.d("Debug", "HJ Debug: "+position);
+                Log.d("Debug", "HJ Debug: "+currentStorageDir.getPath()+"/"+imgs[position]);
+
+                Intent intent = new Intent(context, ImageActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("Purpose","U");   // UserImage(U) or FlickrImage(F)
+                extras.putString("Query",currentStorageDir.getPath()+"/"+imgs[position]);
+                intent.putExtras(extras);
+                startActivity(intent);
             }
         });
         return true;
