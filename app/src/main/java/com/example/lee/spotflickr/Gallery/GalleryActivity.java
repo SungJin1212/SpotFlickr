@@ -33,7 +33,8 @@ import java.util.List;
 public class GalleryActivity extends AppCompatActivity {
 
     private Context context = this;
-    private Button btn;
+    private Button btnLoadLocal;
+    private Button btnRemove;
     int PICK_IMAGE_MULTIPLE = 1;
     private GridView gvGallery;
     private GalleryAdapter galleryAdapter;
@@ -143,6 +144,16 @@ public class GalleryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //TODO: multiselect implementation - https://github.com/serzhby/MultiselectGridViewSample/tree/master/app/src/main
+        /*
+        gvGallery.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                parent.getItemAtPosition(position);
+                return false;
+            }
+        });
+        */
         return true;
     }
 
@@ -191,7 +202,8 @@ public class GalleryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gallery);
 
         // setup objects
-        btn = findViewById(R.id.btn);
+        btnLoadLocal = findViewById(R.id.btnLoadLocal);
+        btnRemove = findViewById(R.id.btnRemove);
         gvGallery = (GridView)findViewById(R.id.gv);// activity_gallery.xml에서 선언한 Gallery를 연결
 
         // set root storage for application
@@ -208,7 +220,7 @@ public class GalleryActivity extends AppCompatActivity {
         // load again after synchronize
         loadCustomGallery();
         // register intent for normal gallery -> custom gallery copy intent
-        btn.setOnClickListener(new View.OnClickListener() {
+        btnLoadLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -218,6 +230,7 @@ public class GalleryActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
             }
         });
+        // TODO: remove function - remove checked images from user storage and firebase
     }
 
     @Override

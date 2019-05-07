@@ -30,6 +30,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private static final int F = 1;
 
     private Button btnData;
+
     private int purpose;
 
     private void setUI() {
