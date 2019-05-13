@@ -1,34 +1,37 @@
 package com.example.lee.spotflickr.Gallery;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.os.Environment;
-import android.provider.OpenableColumns;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+        import android.content.ContentResolver;
+        import android.content.Context;
+        import android.graphics.Bitmap;
+        import android.graphics.BitmapFactory;
+        import android.media.ThumbnailUtils;
+        import android.os.Environment;
+        import android.provider.OpenableColumns;
+        import android.support.v7.app.AppCompatActivity;
+        import android.os.Bundle;
 
 
-import android.content.ClipData;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.Toast;
+        import android.content.ClipData;
+        import android.content.Intent;
+        import android.database.Cursor;
+        import android.net.Uri;
+        import android.provider.MediaStore;
+        import android.util.Log;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.AdapterView;
+        import android.widget.Button;
+        import android.widget.GridView;
+        import android.widget.Toast;
 
-import com.example.lee.spotflickr.R;
+        import com.example.lee.spotflickr.R;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+        import java.io.File;
+        import java.io.FileOutputStream;
+        import java.io.InputStream;
+        import java.io.OutputStream;
+        import java.util.ArrayList;
+        import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
 
@@ -42,7 +45,8 @@ public class GalleryActivity extends AppCompatActivity {
     File currentStorageDir;           // user storage directory
     String[] imgs;
 
-    public String getFileName(Uri uri) {
+
+    public String getUriFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
             Cursor cursor = getContentResolver().query(uri, null, null, null, null);
@@ -116,14 +120,13 @@ public class GalleryActivity extends AppCompatActivity {
     protected boolean loadCustomGallery() {
         File file = currentStorageDir;
         imgs = file.list();
-        ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+        ArrayList<Image> mArrayImgs = new ArrayList<Image>();
         for(int i=0; i<imgs.length; i++){
             Log.d("Debug","HJ debug success file count-"+i+": "+imgs[i]);
-            Uri mImageUri = Uri.fromFile(new File(currentStorageDir.getPath()+"/"+imgs[i]));
-
-            mArrayUri.add(mImageUri);
+            Image img = new Image(currentStorageDir.getPath()+"/"+imgs[i], true);
+            mArrayImgs.add(img);
         }
-        galleryAdapter = new GalleryAdapter(getApplicationContext(),mArrayUri);
+        galleryAdapter = new GalleryAdapter(getApplicationContext(),mArrayImgs);
         gvGallery.setAdapter(galleryAdapter);
         gvGallery.setVerticalSpacing(gvGallery.getHorizontalSpacing());
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) gvGallery
@@ -141,19 +144,22 @@ public class GalleryActivity extends AppCompatActivity {
                 extras.putString("Purpose","U");   // UserImage(U) or FlickrImage(F)
                 extras.putString("Query",currentStorageDir.getPath()+"/"+imgs[position]);
                 intent.putExtras(extras);
+                // clean up all image to basic
+                galleryAdapter.clearChecks();
                 startActivity(intent);
             }
         });
-        //TODO: multiselect implementation - https://github.com/serzhby/MultiselectGridViewSample/tree/master/app/src/main
-        /*
+        //TODO: multiselect implementation
+
         gvGallery.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                parent.getItemAtPosition(position);
-                return false;
+
+                ((Image)galleryAdapter.getItem(position)).toggleChecked();
+                galleryAdapter.notifyDataSetChanged();
+                return true;    // the event is consumed.
             }
         });
-        */
         return true;
     }
 
@@ -230,7 +236,28 @@ public class GalleryActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
             }
         });
-        // TODO: remove function - remove checked images from user storage and firebase
+        // remove function - remove checked images from user storage and firebase
+        btnRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Trying to remove images from firebase...", Toast.LENGTH_LONG).show();
+                // TODO: request image remove on firebase
+
+
+                ArrayList<Image> imgs = galleryAdapter.popCheckedImage();
+                for(Image iv: imgs) {
+                    File f = new File(iv.getPath());
+                    try {
+                        if(f.exists()) {
+                            f.delete();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), "Unable to delete file"+iv.getPath(), Toast.LENGTH_LONG).show();
+                    }
+                }
+                loadCustomGallery();
+            }
+        });
     }
 
     @Override
@@ -245,7 +272,7 @@ public class GalleryActivity extends AppCompatActivity {
                 if(data.getData()!=null){
 
                     Uri mImageUri=data.getData();
-                    if(copyFileFromUri(getApplicationContext(), mImageUri, getFileName(mImageUri))) {
+                    if(copyFileFromUri(getApplicationContext(), mImageUri, getUriFileName(mImageUri))) {
                         Log.d("Debug","SpotFlickr Debug: file copy success");
                     }
                     loadCustomGallery();
@@ -257,7 +284,7 @@ public class GalleryActivity extends AppCompatActivity {
 
                             ClipData.Item item = mClipData.getItemAt(i);
                             Uri uri = item.getUri();
-                            if(copyFileFromUri(getApplicationContext(), uri, getFileName(uri))) {
+                            if(copyFileFromUri(getApplicationContext(), uri, getUriFileName(uri))) {
                                 Log.d("Debug","SpotFlickr Debug: file copy success");
                             }
                             loadCustomGallery();

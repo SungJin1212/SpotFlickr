@@ -60,15 +60,12 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private boolean checkDisplayLocal(String query) {
-        File imgFile = new File(query);
-        if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            ImageView myImage = (ImageView) findViewById(R.id.imageView);
-            myImage.setImageBitmap(myBitmap);
-            return true;
-        } else {
+        Image img = new Image(query, false);
+        if(img.getImg()==null)
             return false;
-        }
+        ImageView myImage = (ImageView) findViewById(R.id.imageView);
+        myImage.setImageBitmap(img.getImg());
+        return true;
     }
 
     @Override
