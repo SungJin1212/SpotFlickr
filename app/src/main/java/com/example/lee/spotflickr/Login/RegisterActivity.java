@@ -145,6 +145,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                                 if (task.isSuccessful()){
                                                     toastMessage("Successful registration! Please verify account by clicking on the link in the email sent to " + email);
                                                     Log.d("Debug","Success");
+                                                    finish();
                                                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                                 }
                                                 else {
@@ -192,7 +193,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
 
         if (view == btnBack) {
-            startActivity(new Intent(this, LoginActivity.class));
+            // startActivity(new Intent(this, LoginActivity.class));
+            finish();
         }
 
         if (view == btnSignup) {

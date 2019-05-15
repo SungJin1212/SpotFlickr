@@ -21,7 +21,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     //define firebase object
     private FirebaseUser user;
     private Button btBack;
-    private Button btnChangePassword;
+    private Button btnEditProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +32,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         btBack = findViewById(R.id.back);
         btBack.setOnClickListener(this);
 
-        btnChangePassword = findViewById(R.id.changePassword);
-        btnChangePassword.setOnClickListener(this);
+        btnEditProfile= findViewById(R.id.editProfile);
+        btnEditProfile.setOnClickListener(this);
 
         init();
         ImageView profile = findViewById(R.id.profileImage);
@@ -57,12 +57,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
     @Override
-    public void onClick(View v) {
-        if (v == btBack) {
+    public void onClick(View view) {
+        if (view == btBack) {
             onBackPressed();
+
         }
-        if (v == btnChangePassword) {
-            startActivity(new Intent(this, ReautheActivity.class));
+        if (view == btnEditProfile) {
+            startActivity(new Intent(this, EditProfileActivity.class));
             finish();
         }
     }

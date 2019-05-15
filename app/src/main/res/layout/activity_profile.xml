@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
-        android:text="User's Information"
+        android:text="Profile"
         android:textColor="@color/text_color_default"
         android:textSize="23dp" />
 
@@ -34,7 +34,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ID : "
+            android:text="Email : "
             android:textColor="@color/text_color_default"
             android:textSize="18sp"
 
@@ -73,8 +73,8 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="355dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -91,7 +91,7 @@
             android:textColor="@color/text_color_default" />
 
         <Button
-            android:id="@+id/changePassword"
+            android:id="@+id/editProfile"
             style="@style/NoShadowButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,8 +99,8 @@
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
             android:background="@color/background_default"
-            android:text="@string/ChangePassword"
-            android:textColor="@color/text_color_default" />
+            android:text="Edit Profile"
+            android:textColor="@color/text_color_default"/>
 
     </LinearLayout>
 

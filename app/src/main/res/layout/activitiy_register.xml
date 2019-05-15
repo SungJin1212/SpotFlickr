@@ -16,13 +16,6 @@
         android:textColor="@color/text_color_default"
         android:textSize="23dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="You need to sign up to use it."
-        android:textColor="@color/text_color_default" />
-
     <EditText
         android:id="@+id/editTextEmail"
         style="@style/BaseEditText"

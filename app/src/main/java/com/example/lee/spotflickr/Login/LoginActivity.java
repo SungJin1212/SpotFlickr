@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     EditText etEmail;
     EditText etPassword;
     Button btnSignin;
-    TextView tvSignin;
+    TextView tvSignUp;
     TextView tvMessage;
     TextView tvFindpassword;
     ProgressDialog progressDialog;
@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //initializing views
         etEmail = (EditText) findViewById(R.id.editTextEmail);
         etPassword = (EditText) findViewById(R.id.editTextPassword);
-        tvSignin = (TextView) findViewById(R.id.textViewSignin);
+        tvSignUp = (TextView) findViewById(R.id.textViewSignin);
         tvMessage = (TextView) findViewById(R.id.textviewMessage);
         tvFindpassword = (TextView) findViewById(R.id.textViewFindpassword);
         btnSignin = (Button) findViewById(R.id.buttonSignup);
@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void setButton() {
         //button click event
         btnSignin.setOnClickListener(this);
-        tvSignin.setOnClickListener(this);
+        tvSignUp.setOnClickListener(this);
         tvFindpassword.setOnClickListener(this);
     }
 
@@ -107,8 +107,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             if(firebaseAuth.getCurrentUser().isEmailVerified()) {
                                 myRef.child(firebaseAuth.getCurrentUser().getUid()).child("validated").setValue(true);
-                                finish();
+                                // CHANGE FOR PURPOSE OF TESTING EDIT PROFILE
+                                // startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                finish();
                             } else {
                                 toastMessage("You need to verify your account by clicking the link in the email that was sent to you");
                             }
@@ -126,13 +128,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (view == btnSignin) {
             userLogin();
         }
-        if (view == tvSignin) {
-            finish();
+        if (view == tvSignUp) {
             startActivity(new Intent(this, RegisterActivity.class));
+            finish();
         }
         if (view == tvFindpassword) {
-            finish();
             startActivity(new Intent(this, FindActivity.class));
+            finish();
         }
     }
 

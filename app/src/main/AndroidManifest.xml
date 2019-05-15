@@ -68,12 +68,16 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name="com.example.lee.spotflickr.Login.EditProfileActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name="com.example.lee.spotflickr.Login.PasswordChangeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
 
         </activity>
-
     </application>
 
 
