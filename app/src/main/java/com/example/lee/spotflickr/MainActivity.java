@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import com.example.lee.spotflickr.Gallery.GalleryActivity;
 import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.Map.MapPoint;
 import com.example.lee.spotflickr.retrofit.APIClient;
@@ -259,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
         if(view == btMyHotPlace) {
-            startActivity(new Intent(this, MyHotPlaceActivity.class));
+            startActivity(new Intent(this, GalleryActivity.class));
 
         }
     }

@@ -78,7 +78,13 @@
 
         </activity>
         <activity
-            android:name="com.example.lee.spotflickr.MyHotPlaceActivity"
+            android:name="com.example.lee.spotflickr.Gallery.GalleryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name="com.example.lee.spotflickr.Gallery.ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
 
