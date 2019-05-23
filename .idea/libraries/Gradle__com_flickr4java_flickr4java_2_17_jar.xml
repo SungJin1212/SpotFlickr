@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.flickr4java:flickr4java:2.17@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.flickr4java/flickr4java/2.17/28bc5b3749448cbab0263a1b82456170e261e108/flickr4java-2.17.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.flickr4java/flickr4java/2.17/6c4640e7f5c964e2adb98ee42ed6352c591c2962/flickr4java-2.17-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

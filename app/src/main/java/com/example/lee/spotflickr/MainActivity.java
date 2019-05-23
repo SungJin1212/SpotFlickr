@@ -38,7 +38,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.lee.spotflickr.Oauth.OAuthTools.getResponse;
 import static com.example.lee.spotflickr.Oauth.OAuthTools.makeOAuthRequestURL;
 
 
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapSetting();
         setFirebase();
         TokenURL = makeOAuthRequestURL();
-        getResponse(TokenURL);
+        //getResponse(TokenURL);
     }
 
     private void mapSetting() {
