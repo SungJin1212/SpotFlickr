@@ -24,8 +24,14 @@ public class WebAuthActivity extends AppCompatActivity {
 
         mWebView = (WebView)findViewById(R.id.webAuthView);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        Log.d("Debug","HJ Debug:webAuthView Created"+url);
         mWebView.loadUrl(url);
         mWebView.setWebViewClient(new WebViewClientClass());
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        OAuthTools.reqAccessToken();
     }
 
     private class WebViewClientClass extends WebViewClient {
@@ -42,10 +48,12 @@ public class WebAuthActivity extends AppCompatActivity {
                 //String result; result = str.substring(target_num,(str.substring(target_num).indexOf("원")+target_num));
                 String token =  url.substring(target_num1+target1.length()+1,(url.substring(target_num1).indexOf("&")+target_num1));
                 String verifier = url.substring(target_num2+target2.length()+1,url.length());
-                OAuthTools.setVerifier(token, verifier);
+                OAuthTools.setUserAuthToken(token, verifier);
                 Log.d("Debug", "HJ Debug:Token Verified::"+verifier);
                 finish();
                 return true;
+            } else {
+                Log.d("Debug", "HJ Debug:No OAUTH URL::"+url);
             }
             return false;
         }
