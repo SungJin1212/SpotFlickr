@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -18,6 +19,7 @@ import android.widget.ImageButton;
 import com.example.lee.spotflickr.Gallery.GalleryActivity;
 import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.Map.MapPoint;
+import com.example.lee.spotflickr.Oauth.OAuthTools;
 import com.example.lee.spotflickr.retrofit.APIClient;
 import com.example.lee.spotflickr.retrofit.parser.Photo;
 import com.example.lee.spotflickr.retrofit.parser.PhotoList;
@@ -39,7 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.lee.spotflickr.Oauth.OAuthTools.makeOAuthRequestURL;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, TMapGpsManager.onLocationChangedCallback {
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         try {
+            Log.d("Debug", "HJ Debug");
             init();
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,12 +83,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        OAuthTools.getInstance(context);
+    }
+
     private void init() throws IOException {
         btnSetting();
         mapSetting();
         setFirebase();
-        TokenURL = makeOAuthRequestURL();
-        //getResponse(TokenURL);
     }
 
     private void mapSetting() {
