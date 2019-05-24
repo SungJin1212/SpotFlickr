@@ -41,7 +41,7 @@ public class WebAuthActivity extends AppCompatActivity {
                 int target_num2 = url.indexOf(target2);
                 //String result; result = str.substring(target_num,(str.substring(target_num).indexOf("원")+target_num));
                 String token =  url.substring(target_num1+target1.length()+1,(url.substring(target_num1).indexOf("&")+target_num1));
-                String verifier = url.substring(target_num2+target2.length()+1,url.length()-1);
+                String verifier = url.substring(target_num2+target2.length()+1,url.length());
                 OAuthTools.setVerifier(token, verifier);
                 Log.d("Debug", "HJ Debug:Token Verified::"+verifier);
                 finish();
