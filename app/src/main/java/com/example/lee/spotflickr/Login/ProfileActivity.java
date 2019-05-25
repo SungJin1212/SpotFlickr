@@ -21,11 +21,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     //define firebase object
     private FirebaseUser user;
     private Button btBack;
-<<<<<<< HEAD
     private Button btnEditProfile;
-=======
-    private Button btnChangePassword;
->>>>>>> c105167a002adcf7521b8e5d777979608bba239a
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +32,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         btBack = findViewById(R.id.back);
         btBack.setOnClickListener(this);
 
-<<<<<<< HEAD
         btnEditProfile= findViewById(R.id.editProfile);
         btnEditProfile.setOnClickListener(this);
-=======
-        btnChangePassword = findViewById(R.id.changePassword);
-        btnChangePassword.setOnClickListener(this);
->>>>>>> c105167a002adcf7521b8e5d777979608bba239a
 
         init();
         ImageView profile = findViewById(R.id.profileImage);
@@ -66,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
     @Override
-<<<<<<< HEAD
     public void onClick(View view) {
         if (view == btBack) {
             onBackPressed();
@@ -78,15 +68,3 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 }
-=======
-    public void onClick(View v) {
-        if (v == btBack) {
-            onBackPressed();
-        }
-        if (v == btnChangePassword) {
-            startActivity(new Intent(this, ReautheActivity.class));
-            finish();
-        }
-    }
-}
->>>>>>> c105167a002adcf7521b8e5d777979608bba239a

@@ -8,13 +8,10 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="text_size_default">14sp</dimen>
-<<<<<<< HEAD
     <dimen name="text_size_Medium">18sp</dimen>
     <dimen name="text_size_Large">22sp</dimen>
-    <dimen name="button_size">50dp</dimen>
     <dimen name="small_button_size">30dp</dimen>
-=======
     <dimen name="text_size_channel">18sp</dimen>
-    <dimen name="button_size">65dp</dimen>
->>>>>>> c105167a002adcf7521b8e5d777979608bba239a
+    <dimen name="button_size">50dp</dimen>
+
 </resources>
