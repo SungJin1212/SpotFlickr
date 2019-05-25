@@ -16,10 +16,9 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
-import com.example.lee.spotflickr.Gallery.GalleryActivity;
+import com.example.lee.spotflickr.Gallery.HotspotListActivity;
 import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.Map.MapPoint;
-import com.example.lee.spotflickr.Oauth.OAuthTools;
 import com.example.lee.spotflickr.retrofit.APIClient;
 import com.example.lee.spotflickr.retrofit.parser.Photo;
 import com.example.lee.spotflickr.retrofit.parser.PhotoList;
@@ -82,11 +81,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /*
     @Override
     protected void onStart() {
         super.onStart();
         OAuthTools.getInstance(context);
-    }
+    }*/
 
     private void init() throws IOException {
         btnSetting();
@@ -265,7 +265,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
         if(view == btMyHotPlace) {
-            startActivity(new Intent(this, GalleryActivity.class));
+            Log.d("HJ Debug", "hotlist");
+            startActivity(new Intent(this, HotspotListActivity.class));
 
         }
     }
