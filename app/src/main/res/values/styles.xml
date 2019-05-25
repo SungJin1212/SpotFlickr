@@ -1,0 +1,65 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar" />
+
+    <style name="BaseEditText" parent="Base.V7.Widget.AppCompat.EditText">
+
+        <item name="android:textColor">@color/text_color_default</item>
+        <item name="android:textColorHint">@color/hint_color_default</item>
+
+    </style>
+
+    <style name="EditTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/hint_color_default</item>
+        <item name="colorControlNormal">@color/hint_color_default</item>
+
+    </style>
+
+    <style name="NoShadowButton" parent="android:style/Widget.Button">
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:textSize">16dp</item>
+    </style>
+
+    <style name="ConfigTheme" parent="android:Theme.Holo.Light">
+
+    </style>
+
+    <style name="FullscreenTheme" parent="AppTheme">
+
+    </style>
+
+    <style name="DataTableTheme" parent="android:Theme.Holo.Light"></style>
+
+
+    <style name="DataHeaderTheme" parent="android:Theme.Holo.Light">
+        <item name="android:background">#000</item>
+    </style>
+
+    <style name="DataTableHeaderAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DataTableSubHeaderAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
+    <style name="DataTableLabelAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="DataTableValueAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#fff</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <style name="myDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+
+</resources>

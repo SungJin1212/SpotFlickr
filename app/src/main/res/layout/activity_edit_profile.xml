@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_default"
+    android:orientation="vertical"
+    android:weightSum="5"
+
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/newpass"
+            android:theme="@style/EditTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:ems="10"
+            android:hint="New Password"
+            android:inputType="textPassword"
+            android:textColor="@color/text_color_default"
+            android:textColorHint="@color/hint_color_default"
+            android:textSize="@dimen/text_size_Medium" />
+
+        <EditText
+            android:id="@+id/repeatnewpass"
+            android:theme="@style/EditTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+            android:ems="10"
+            android:hint="Repeat new password"
+            android:inputType="textPassword"
+            android:textColor="@color/text_color_default"
+            android:textColorHint="@color/hint_color_default"
+            android:textSize="@dimen/text_size_Medium" />
+
+        <EditText
+            android:id="@+id/currentpass"
+            android:theme="@style/EditTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+            android:ems="10"
+            android:hint="Current password"
+            android:inputType="textPassword"
+            android:textColor="@color/text_color_default"
+            android:textColorHint="@color/hint_color_default"
+            android:textSize="@dimen/text_size_Medium" />
+
+        <Button
+            android:id="@+id/changepass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+
+            android:background="@color/transparent_botton"
+            android:text="Change password"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size_Medium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="Sync Flickr Account"
+            android:textColor="@color/text_color_default"
+            android:textSize="@dimen/text_size_Medium" />
+
+        <TextView
+            android:id="@+id/deleteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+            android:text="To verify deletion of account and all related data, enter password below."
+            android:textColor="@color/text_color_default"
+            android:textSize="@dimen/text_size_default"
+            />
+
+
+        <EditText
+            android:id="@+id/verifiedPassword"
+            android:theme="@style/EditTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColorHint="@color/hint_color_default"
+            android:textColor="@color/text_color_default" />
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+
+            android:background="@android:color/holo_red_dark"
+            android:clickable="true"
+            android:text="Delete Account"
+            android:textColor="@android:color/white" />
+
+
+        <TextView
+            android:id="@+id/deleteHeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+
+            android:text="Delete Account"
+            android:textColor="@color/text_color_default"
+            android:textSize="18sp" />
+
+
+        <Button
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/transparent_botton"
+            android:clickable="true"
+            android:text="@string/Back"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="text_size_default">14sp</dimen>
+    <dimen name="text_size_Medium">18sp</dimen>
+    <dimen name="text_size_Large">22sp</dimen>
+    <dimen name="button_size">50dp</dimen>
+    <dimen name="small_button_size">30dp</dimen>
+</resources>

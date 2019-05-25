@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:background="@color/background_default"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="0.4"
+        android:background="@color/background_default"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edtSearchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:hint="Search Location"
+            android:textColorHint="@color/hint_color_default"
+            android:textSize="@dimen/text_size_Medium"
+            android:theme="@style/EditTheme" />
+
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:background="@color/transparent_botton"
+            android:onClick="onMapSearch"
+            android:text="Search"
+            android:textColor="@color/text_color_default" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/Tmap"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="6"
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
+        >
+    </FrameLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="0.1"
+        android:background="@color/background_default"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btncamera"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_weight="1"
+            android:background="@color/transparent_botton"
+            android:src="@drawable/camera"
+            android:textColor="@color/text_color_default" />
+
+        <Button
+            android:id="@+id/btnmyHotPlace"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_weight="1"
+            android:background="@color/background_default"
+            android:text="MyHot\nPlace"
+            android:textColor="@color/text_color_default" />
+
+        <Button
+            android:id="@+id/btnhotPlace"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_weight="1"
+            android:background="@color/background_default"
+            android:text="Hot\nPlace"
+            android:textColor="@color/text_color_default" />
+
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_weight="1"
+            android:background="@color/background_default"
+            android:text="Log\nout"
+            android:textColor="@color/text_color_default" />
+
+        <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_weight="1"
+            android:background="@color/background_default"
+            android:text="Pro\nfile"
+            android:textColor="@color/text_color_default" />
+
+    </LinearLayout>
+</LinearLayout>
