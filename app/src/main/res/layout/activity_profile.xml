@@ -12,7 +12,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
+<<<<<<< HEAD
         android:text="Profile"
+=======
+        android:text="User's Information"
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a
         android:textColor="@color/text_color_default"
         android:textSize="23dp" />
 
@@ -34,7 +38,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+<<<<<<< HEAD
             android:text="Email : "
+=======
+            android:text="ID : "
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a
             android:textColor="@color/text_color_default"
             android:textSize="18sp"
 
@@ -73,8 +81,13 @@
     </LinearLayout>
 
     <LinearLayout
+<<<<<<< HEAD
         android:layout_width="match_parent"
         android:layout_height="355dp"
+=======
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -91,7 +104,11 @@
             android:textColor="@color/text_color_default" />
 
         <Button
+<<<<<<< HEAD
             android:id="@+id/editProfile"
+=======
+            android:id="@+id/changePassword"
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a
             style="@style/NoShadowButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,9 +116,18 @@
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
             android:background="@color/background_default"
+<<<<<<< HEAD
             android:text="Edit Profile"
             android:textColor="@color/text_color_default"/>
 
     </LinearLayout>
 
 </LinearLayout>
+=======
+            android:text="@string/ChangePassword"
+            android:textColor="@color/text_color_default" />
+
+    </LinearLayout>
+
+</LinearLayout>
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a

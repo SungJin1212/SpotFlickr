@@ -12,11 +12,19 @@ public class Photos {
     @SerializedName("perpage")
     public int perpage;
     @SerializedName("total")
+<<<<<<< HEAD
     public int total;
     @SerializedName("photo")
     public Photo[] photo;
 
     public Photos(int page, int pages, int perpage, int total, Photo[] photo) {
+=======
+    public String total;
+    @SerializedName("photo")
+    public Photo[] photo;
+
+    public Photos(int page, int pages, int perpage, String total, Photo[] photo) {
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a
         this.page = page;
         this.pages = pages;
         this.perpage = perpage;

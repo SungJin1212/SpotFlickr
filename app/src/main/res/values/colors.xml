@@ -13,5 +13,8 @@
     <color name="text_color_default">#000000</color>
     <color name="background_default">#ffffff</color>
     <color name="hint_color_default">#808080</color>
+<<<<<<< HEAD
     <color name="transparent_botton">#00ff0000 </color>
+=======
+>>>>>>> c105167a002adcf7521b8e5d777979608bba239a
 </resources>

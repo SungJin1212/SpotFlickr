@@ -58,6 +58,9 @@ dependencies {
     implementation "com.flickr4java:flickr4java:2.17"
 
 
+    implementation files('libs/[Android]TmapSDK_1.60/lib/com.skt.Tmap_1.60.jar')
+    //flickr
+    implementation "com.flickr4java:flickr4java:2.17"
 }
 
 apply plugin: 'com.google.gms.google-services'
