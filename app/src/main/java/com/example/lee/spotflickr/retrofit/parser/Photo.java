@@ -9,6 +9,11 @@ public class Photo {
     private String owner;
     @SerializedName("secret")
     private String secret;
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @SerializedName("server")
     private String server;
     @SerializedName("farm")
@@ -41,20 +46,16 @@ public class Photo {
     private int geo_is_contact;
     @SerializedName("geo_is_public")
     private int geo_is_public;
+    @SerializedName("url_s")
+    private String url_s;
 
-    public String getTitle() {
-        return title;
-    }
 
-    public float getLatitude() {
-        return latitude;
-    }
+    @SerializedName("height_s")
+    private String height_s;
+    @SerializedName("width_s")
+    private String width_s;
 
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public Photo(String id, String owner, String secret, String server, int farm, String title, int ispublic, int isfriend, int isfamily, float latitude, float longitude, int accuracy, int context, String place_id, String woeid, int geo_is_family, int geo_is_friend, int geo_is_contact, int geo_is_public) {
+    public Photo(String id, String owner, String secret, String server, int farm, String title, int ispublic, int isfriend, int isfamily, float latitude, float longitude, int accuracy, int context, String place_id, String woeid, int geo_is_family, int geo_is_friend, int geo_is_contact, int geo_is_public, String url_s, String height_s, String width_s) {
         this.id = id;
         this.owner = owner;
         this.secret = secret;
@@ -74,5 +75,25 @@ public class Photo {
         this.geo_is_friend = geo_is_friend;
         this.geo_is_contact = geo_is_contact;
         this.geo_is_public = geo_is_public;
+        this.url_s = url_s;
+        this.height_s = height_s;
+        this.width_s = width_s;
     }
+
+    public String getUrl_s() {
+        return url_s;
+    }
+    public String getTitle() {
+        return title;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+
 }
