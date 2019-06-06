@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -44,15 +45,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
+import com.skt.Tmap.TMapLabelInfo;
 import com.skt.Tmap.TMapMarkerItem;
+import com.skt.Tmap.TMapMarkerItem2;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapTapi;
 import com.skt.Tmap.TMapView;
 
+import org.apache.log4j.chainsaw.Main;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -72,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton btCamera;
     private Button btSearch;
     EditText edtSearchText;
+    final private static String DEFAULTNAME = "Hotplace";
     private double distance;
     final static double MAXDISTANCE = 200000; // 2km.
 
@@ -89,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
     private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
     private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
+
 
 
     @Override
@@ -123,16 +132,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tmapview = new TMapView(this);
         tmapview.setSKTMapApiKey(mApiKey);
         Tmap.addView(tmapview);
-
 //        addPoint();
 //        showMarkerPoint();
-
         /* 현재 보는 방향 */
         tmapview.setCompassMode(false);
-
         /* 현위치 아이콘표시 */
         tmapview.setIconVisibility(true);
-
         /* 줌레벨 */
         tmapview.setZoomLevel(15);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
@@ -158,25 +163,77 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
+
         // 풍선에서 우측 버튼 클릭시 할 행동입니다
         tmapview.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
-
-
             @Override
-            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+            public void onCalloutRightButton(final TMapMarkerItem tMapMarkerItem) {
+
+                android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Select");
+                alertDialogBuilder
+                        .setMessage("Select function")
+                        .setCancelable(false)
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(
+                                            DialogInterface dialog, int id) {
+                                        // 다이얼로그를 취소한다
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setPositiveButton("Photos",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        double Long = tmapview.getLocationPoint().getLongitude();
+                                        double Lat = tmapview.getLocationPoint().getLatitude();
+                                        retrofit2.Call<PhotoList> SearchPhotoCall = APIClient.getInstance().getService().Search_Photo(
+                                                "?method=flickr.photos.search&api_key=43e1b76fcd7e86e9d15001d16df34b7a&" + "sort=interestingness-desc&" + "accuracy=1&"+ "lat=" + Lat +
+                                                        "&lon=" + Long + "&radius="+ 0.5 +"&per_page=40&extras=geo%2Curl_s&format=json&nojsoncallback=1");
+                                        SearchPhotoCall.enqueue(new Callback<PhotoList>() {
+                                            @Override
+                                            public void onResponse(Call<PhotoList> call, Response<PhotoList> response) {
+                                                Photos Photos = response.body().photos;
+
+                                                ArrayList <String> url = new ArrayList<>();
+                                                for (Photo photo : Photos.photo) {
+                                                    url.add(photo.getUrl_s());
+                                                }
+                                                Intent intent = new Intent(MainActivity.this, PhotoListActivity.class);
+                                                intent.putExtra("Url", url);
+                                                startActivityForResult(intent, 1);
+
+
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<PhotoList> call, Throwable t) {
+
+                                            }
+                                        });
+                                    }
+                                })
+                        .setNeutralButton("FindRoute", //findroute.
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        searchRoute(tmapview.getLocationPoint(), tMapMarkerItem.getTMapPoint());
+                                    }
+                                });
+
+                android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+
                 //Toast.makeText(MainActivity.this,"클릭",Toast.LENGTH_SHORT).show();
                 //tMapTapi.invokeRoute("go",tMapMarkerItem.getPositionX() , tMapMarkerItem.getPositionY());
-                searchRoute(tmapview.getLocationPoint(), tMapMarkerItem.getTMapPoint());
             }
         });
     }
-
     private void setGPS() {
         tmapgps = new TMapGpsManager(MainActivity.this);
         tmapgps.setMinTime(1000);
         tmapgps.setMinDistance(5);
         tmapgps.setProvider(TMapGpsManager.NETWORK_PROVIDER); //연결된 인터넷으로 현 위치를 받습니다.
-
         //실내일 때 유용합니다.
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER); //gps로 현 위치를 잡습니다.
         tmapgps.OpenGps();
@@ -246,8 +303,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void showMarkerPoint() {// 마커 찍는거 빨간색 포인트.
-
-
         if (m_mapPoint.size() == 0) {
             Toast.makeText(this, "There is no hotspot within 10km", Toast.LENGTH_SHORT).show();
         } else {
@@ -268,17 +323,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 // 풍선뷰 안의 항목에 글을 지정합니다.
                 item.setCalloutTitle(m_mapPoint.get(i).getName());
-                item.setCalloutSubTitle("hotplace");
+                item.setCalloutSubTitle("HotSpot");
                 item.setCanShowCallout(true);
                 item.setAutoCalloutVisible(true);
 
                 Bitmap rightButtonClick = BitmapFactory.decodeResource(context.getResources(), R.mipmap.rightarrow);
-
                 item.setCalloutRightButtonImage(rightButtonClick);
 
-
                 String strID = String.format("pmarker%d", mMarkerID++);
-
                 tmapview.addMarkerItem(strID, item);
                 mArrayMarkerID.add(strID);
 
@@ -290,27 +342,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Bitmap bitmap;
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
                 //poi_dot은 지도에 꼽을 빨간 핀 이미지입니다
-
                 item.setTMapPoint(point);
                 item.setName(m_mapPoint.get(i).getName());
                 item.setVisible(item.VISIBLE);
-
                 item.setIcon(bitmap);
-
-
                 // 풍선뷰 안의 항목에 글을 지정합니다.
                 item.setCalloutTitle(m_mapPoint.get(i).getName());
-                item.setCalloutSubTitle("hotplace");
+                item.setCalloutSubTitle("HotSpot");
                 item.setCanShowCallout(true);
                 item.setAutoCalloutVisible(true);
 
                 Bitmap rightButtonClick = BitmapFactory.decodeResource(context.getResources(), R.mipmap.rightarrow);
-
                 item.setCalloutRightButtonImage(rightButtonClick);
-
-
                 String strID = String.format("pmarker%d", mMarkerID++);
-
                 tmapview.addMarkerItem(strID, item);
                 mArrayMarkerID.add(strID);
 
@@ -342,25 +386,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         firebaseAuth = FirebaseAuth.getInstance();
     }
 
-    private void SearchPhotoCall(double Long, double Lat) {
+    private void SearchPhotoCall(double Long, double Lat,int radius) {
 
         retrofit2.Call<PhotoList> SearchPhotoCall = APIClient.getInstance().getService().Search_Photo(
-                "?method=flickr.photos.search&api_key=43e1b76fcd7e86e9d15001d16df34b7a&" + "sort=interestingness-asc&" + "lat=" + Lat +
-                        "&lon=" + Long + "&radius=10&per_page=10&extras=geo&format=json&nojsoncallback=1");
+                "?method=flickr.photos.search&api_key=43e1b76fcd7e86e9d15001d16df34b7a&" + "sort=interestingness-desc&" + "accuracy=1&"+ "lat=" + Lat +
+                        "&lon=" + Long + "&radius="+ radius +"&per_page=40&extras=geo%2Curl_s&format=json&nojsoncallback=1");
         SearchPhotoCall.enqueue(new Callback<PhotoList>() {
             @Override
             public void onResponse(Call<PhotoList> call, Response<PhotoList> response) {
                 if (response.isSuccessful()) {
 
                     Photos Photos = response.body().photos;
-
                     if (m_mapPoint.size() != 0) {
                         m_mapPoint.clear();
                     }
-
+                    HashSet title = new HashSet();
                     for (Photo photo : Photos.photo) {
-                        m_mapPoint.add(new MapPoint(photo.getTitle(), photo.getLatitude(), photo.getLongitude()));
+                        if ( photo.getTitle().isEmpty()) {
+                            photo.setTitle(DEFAULTNAME);
+                        }
+                        int temp = title.size();
+                        float value = photo.getLatitude() * photo.getLongitude();
+                        title.add(Math.round(value));
+                        if (title.size() > temp) {
+                            m_mapPoint.add(new MapPoint(photo.getTitle(), photo.getLatitude(), photo.getLongitude()));
+                        }
+                        if(title.size() == 10) {
+                            break;
+                        }
                     }
+
                     showMarkerPoint();
                 }
 
@@ -392,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /*  화면중심을 단말의 현재위치로 이동 */
                 tmapview.setTrackingMode(true);
                 tmapview.setSightVisible(true);
-                SearchPhotoCall(searchLong, searchLat);
+                SearchPhotoCall(searchLong, searchLat,10);
 //                    for(int i=0; i< poiItems.size(); i++) {
 //                    TMapPOIItem item = poiItems.get(i);
 //                    Log.d("디버그",item.getPOIName() +"," + item.getPOIPoint().toString());
@@ -432,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view == btHotPlace) { //search hotplace.
-            SearchPhotoCall(tmapview.getLocationPoint().getLongitude(), tmapview.getLocationPoint().getLatitude());
+            SearchPhotoCall(tmapview.getLocationPoint().getLongitude(), tmapview.getLocationPoint().getLatitude(),10);
         }
         if (view == btSearch) {
             String searchText = edtSearchText.getText().toString();
