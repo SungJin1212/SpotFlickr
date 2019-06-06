@@ -5,6 +5,7 @@ public class Hotspot {
     private String name;
     private int longitude;
     private int latitude;
+    private String storageHash;
 
     public Hotspot() {
     }
@@ -31,6 +32,14 @@ public class Hotspot {
 
     public void setLatitude(int latitude) {
         this.latitude = latitude;
+    }
+
+    public String getStorageHash() {
+        return storageHash;
+    }
+
+    public void setStorageHash(String storageHash) {
+        this.storageHash = storageHash;
     }
 }
 
