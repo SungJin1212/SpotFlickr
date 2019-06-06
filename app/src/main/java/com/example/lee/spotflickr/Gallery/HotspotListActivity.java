@@ -33,8 +33,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class HotspotListActivity extends AppCompatActivity {
-    ArrayList<String> items = new ArrayList<String>();
-    ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, items);
+    ArrayList<String> items;
+    ArrayAdapter<String> adapter;
     ListView listview;
     // buttons
     Button addButton;
@@ -44,15 +44,18 @@ public class HotspotListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_hotspot_list);
         Log.d("HJ Debug", "TEST");
-
+        items = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
         // listview create, adapter setting
-        listview = (ListView) findViewById(R.id.listView);
+        listview = (ListView) findViewById(R.id.hotspotListView);
         listview.setAdapter(adapter);
         // button setting
         addButton = (Button)findViewById(R.id.add);
         renameButton = (Button)findViewById(R.id.rename);
         deleteButton = (Button)findViewById(R.id.delete);
+        setBtnlistener();
 
         //todo:: request firebase about lists, load as view.
     }
@@ -102,14 +105,28 @@ public class HotspotListActivity extends AppCompatActivity {
             }
         });
         alert.show();
+        Log.d("HJ Debug", "alert showed.");
+    }
+    private int reqHotspotListAddFirebase(String name) {
+        return 0;
     }
     private void tryAddWithName(String name) {
         // request add list on firebase
-
+        int res = reqHotspotListAddFirebase(name);
         // if failed, make message
-
-        // if success, sync with local.
-
+        switch(res) {
+            case -1:
+                Toast.makeText(this, "Same hotspot list name already exists.", Toast.LENGTH_LONG).show();
+                break;
+            case -2:
+                Toast.makeText(this, "Unknown Error.", Toast.LENGTH_LONG).show();
+                break;
+            case 0:
+                // if success, sync with local.
+                items.add(name);
+                adapter.notifyDataSetChanged();
+                break;
+        }
     }
     private void tryRenameWithName(String name) {
         // request renanme list on firebase
