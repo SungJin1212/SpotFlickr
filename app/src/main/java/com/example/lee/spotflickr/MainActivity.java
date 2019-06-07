@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.lee.spotflickr.Gallery.GalleryActivity;
 import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.Login.ProfileActivity;
+import com.example.lee.spotflickr.Gallery.TakenPhotoActivity;
 
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -51,6 +52,7 @@ import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapTapi;
 import com.skt.Tmap.TMapView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText edtSearchText;
     private double distance;
     final static double MAXDISTANCE = 200000; // 2km.
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     FirebaseAuth firebaseAuth;
     FrameLayout Tmap;
@@ -401,6 +404,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    public void takePhoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            Log.d("Main", "onactivityresult started");
+            ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+            byte[] byteArray = bStream.toByteArray();
+
+            Intent intent = new Intent(getApplicationContext(), TakenPhotoActivity.class);
+            intent.putExtra("image", byteArray);
+            //finish();
+            startActivity(intent);
+
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -448,8 +477,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view == btCamera) { //take photo.
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivity(intent);
+            takePhoto();
         }
         if (view == btMyHotPlace) {
             Log.d("HJ Debug", "hotlist");
@@ -457,9 +485,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
-
-
-
 
     @Override
     public void onLocationChange(Location location) {
