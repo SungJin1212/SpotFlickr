@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,11 +29,15 @@ import android.widget.Toast;
 
 import com.example.lee.spotflickr.DatabaseClasses.HotspotList;
 import com.example.lee.spotflickr.Login.LoginActivity;
+import com.example.lee.spotflickr.MainActivity;
 import com.example.lee.spotflickr.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +47,7 @@ import java.util.ArrayList;
 
 public class HotspotListActivity extends AppCompatActivity {
     ArrayList<String> items;
+    ArrayList<String> itemKeys;
     ArrayAdapter<String> adapter;
     ListView listview;
     // buttons
@@ -51,8 +57,7 @@ public class HotspotListActivity extends AppCompatActivity {
     // firebase
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
-    FirebaseDatabase database;
-    DatabaseReference hotspotListDB;
+    DatabaseReference mDatabase;
 
     private void setFirebase() {
         //initializig firebase auth object
@@ -64,12 +69,34 @@ public class HotspotListActivity extends AppCompatActivity {
             //그리고 profile 액티비티를 연다.
             startActivity(new Intent(getApplicationContext(), LoginActivity.class)); //추가해 줄 ProfileActivity
         }
-        database = FirebaseDatabase.getInstance();
-        hotspotListDB = database.getReference("Hotspotlist");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        if(mDatabase==null) {
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
     }
-    private ArrayList<HotspotList> getHotspotList() {
-        hotspotListDB.orderByChild("userEmail").equalTo(firebaseUser.getEmail());
-        return null;
+    private void syncHotspotList() {
+        mDatabase.child("HotspotList").orderByChild("userEmail").equalTo(firebaseUser.getEmail()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                items.clear();
+                itemKeys.clear();
+                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    HotspotList hl = userSnapshot.getValue(HotspotList.class);
+                    if(hl==null) {
+                        Toast.makeText(HotspotListActivity.this, "Does not have any hotspotlist.", Toast.LENGTH_LONG).show();
+                    } else {
+                        items.add(hl.getName());
+                        itemKeys.add(userSnapshot.getKey());
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(HotspotListActivity.this, "Error occur.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -77,10 +104,9 @@ public class HotspotListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hotspot_list);
 
-
-
         // listview create, adapter setting
         items = new ArrayList<String>();
+        itemKeys = new ArrayList<String>();
         listview = (ListView) findViewById(R.id.hotspotListView);
         listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listview.setItemsCanFocus(false);
@@ -93,14 +119,9 @@ public class HotspotListActivity extends AppCompatActivity {
         setBtnlistener();
         setListViewListener();
 
-        //TODO: 1. load 'hotspotlist' of 'user'
         //TODO:    1-1. if no hotspotlist exists, create a hotspotlist with name 'Favorites'
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-        DatabaseReference hotspotListRef = firebaseDatabase.getReference("User");
-
+        setFirebase();
+        syncHotspotList();
     }
     private int getCheckCnt() {
         int cnt = 0;
@@ -126,6 +147,15 @@ public class HotspotListActivity extends AppCompatActivity {
                 listview.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
             }
         }
+    }
+    private ArrayList<String> getCheckedItemKeys() {
+        ArrayList<String> res = new ArrayList<String>();
+        for (int i=0; i<items.size(); i++) {
+            if(listview.isItemChecked(i)) {
+                res.add(itemKeys.get(i));
+            }
+        }
+        return res;
     }
     private void removeChecked() {
         ArrayList<Integer> posList = new ArrayList<Integer>();
@@ -231,40 +261,50 @@ public class HotspotListActivity extends AppCompatActivity {
         alert.show();
         Log.d("HJ Debug", "alert showed.");
     }
-    private int reqHotspotListAddFirebase(String name) {
-        return 0;
-    }
+
     private void tryAddWithName(String name) {
-        // request add list on firebase
-        int res = reqHotspotListAddFirebase(name);
-        // if failed, make message
-        switch(res) {
-            case -1:
+        for(String nm: items) {
+            if(nm.equals(name)) {
                 Toast.makeText(this, "Same hotspot list name already exists.", Toast.LENGTH_LONG).show();
-                break;
-            case -2:
-                Toast.makeText(this, "Unknown Error.", Toast.LENGTH_LONG).show();
-                break;
-            case 0:
-                // if success, sync with local.
-                items.add(name);
-                adapter.notifyDataSetChanged();
-                break;
+                return;
+            }
         }
+        HotspotList hl = new HotspotList(name, firebaseUser.getEmail());
+        mDatabase.child("HotspotList").push().setValue(hl);
     }
-    private void tryRenameWithName(String name) {
-        // request renanme list on firebase
+    private void tryRenameWithName(final String name) {
+        for(String nm: items) {
+            if(nm.equals(name)) {
+                Toast.makeText(this, "Same hotspot list name already exists.", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        int pos = getCheckedPos();
+        Log.d("HJ Debug", ""+pos);
+        String target = items.get(pos);
+        Log.d("HJ Debug", target);
+        mDatabase.child("HotspotList").orderByChild("name").equalTo(target).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    String key = userSnapshot.getKey();
+                    Log.d("HJ Debug", "key:"+key);
+                    mDatabase.child("HotspotList").child(key).child("name").setValue(name);
+                }
+                clearCheck();
+            }
 
-        // if failed, make message
-
-        // if success, sync with local.
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                clearCheck();
+            }
+        });
     }
     private void tryDelete() {
-        // request deletion on the list of firebase
-
-        // if failed, make message
-
-        // if success, delete it on display + local
-        removeChecked();
+        ArrayList<String> keys = getCheckedItemKeys();
+        for(String k: keys) {
+            mDatabase.child("HotspotList").child(k).setValue(null);
+        }
+        clearCheck();
     }
 }
