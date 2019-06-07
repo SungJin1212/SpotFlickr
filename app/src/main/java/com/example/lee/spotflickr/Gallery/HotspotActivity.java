@@ -212,6 +212,7 @@ public class HotspotActivity extends AppCompatActivity {
                 Intent intent = new Intent(c, HotspotGalleryActivity.class);
                 Bundle extras = new Bundle();
                 extras.putString("Ref","HotspotList/"+hotspotListKey+"/hotspots/"+itemKeys.get(position));
+                extras.putString("storageRef",itemKeys.get(position));
                 intent.putExtras(extras);
                 // clean up all image to basic
                 clearCheck();

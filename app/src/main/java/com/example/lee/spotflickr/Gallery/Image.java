@@ -6,14 +6,12 @@ import android.media.ThumbnailUtils;
 
 public class Image {
     private String filename;
-    private String hash;
     private Bitmap img;
     private boolean isChecked = false;
     private boolean imgExists = false;
 
-    public Image(String filename, String hash, Bitmap img) {
+    public Image(String filename, Bitmap img) {
         this.filename = filename;
-        this.hash = hash;
         this.img = img;
         imgExists = true;
     }
@@ -23,8 +21,8 @@ public class Image {
     public boolean getExists() {
         return imgExists;
     }
-    public String getHash() {
-        return hash;
+    public String getFilename() {
+        return filename;
     }
 
 

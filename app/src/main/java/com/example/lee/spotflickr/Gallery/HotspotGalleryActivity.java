@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,7 +38,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -60,9 +63,12 @@ public class HotspotGalleryActivity extends AppCompatActivity {
     FirebaseStorage firebaseStorage;
     DatabaseReference mDatabase;
     StorageReference storageRef;
+    String storageRefKey;
     String Ref;
     ArrayList<HotspotPhoto> pendingPhotos;
     ArrayList<Image> imgs;
+    double hotspotLongitude;
+    double hotspotLatitude;
 
     private void setGVEvent() {
 
@@ -71,8 +77,12 @@ public class HotspotGalleryActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(context, HotspotImageActivity.class);
                 Bundle extras = new Bundle();
-                extras.putString("Ref",Ref+"/photos/"+imgs.get(position).getHash());
-                extras.putString("StorageRef",imgs.get(position).getHash());
+                String filename = imgs.get(position).getFilename();
+                int iend = filename.indexOf('.');
+                if(iend != -1)
+                    filename = filename.substring(0, iend);
+                extras.putString("Ref",Ref+"/photos/"+filename);
+                extras.putString("StorageRef",Ref+filename);
                 intent.putExtras(extras);
                 // clean up all image to basic
                 galleryAdapter.clearChecks();
@@ -96,7 +106,6 @@ public class HotspotGalleryActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firebaseStorage = FirebaseStorage.getInstance();
-        storageRef = firebaseStorage.getReference();
         if (firebaseUser == null) {
             //이미 로그인 되었다면 이 액티비티를 종료함
             finish();
@@ -104,10 +113,23 @@ public class HotspotGalleryActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class)); //추가해 줄 ProfileActivity
         }
         mDatabase = FirebaseDatabase.getInstance().getReference(Ref);
+        storageRef = firebaseStorage.getReference(storageRefKey);
         if(mDatabase==null) {
             Toast.makeText(HotspotGalleryActivity.this, "Such Hotspots Not Exists.", Toast.LENGTH_LONG).show();
             finish();
         }
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                hotspotLongitude = dataSnapshot.child("longitude").getValue(Double.class);
+                hotspotLatitude = dataSnapshot.child("latitude").getValue(Double.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
     private void syncImages() {
         mDatabase.child("photos").addValueEventListener(new ValueEventListener() {
@@ -121,11 +143,12 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                 pendingPhotos.clear();
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                     HotspotPhoto pt = userSnapshot.getValue(HotspotPhoto.class);
+                    Log.d("HJ Debug", Ref+"thumb"+pt.getFilename());
                     Boolean found=false;
                     for(Image img: imgs) {
                         if(img.getExists()) {
                             continue;
-                        } else if(pt.getStorageHash().equals(img.getHash())) {
+                        } else if(pt.getFilename().equals(img.getFilename())) {
                             img.setExists(true);
                             found = true;
                             break;
@@ -144,11 +167,15 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                     }
                 }
                 for(final HotspotPhoto pt: pendingPhotos) {
-                    storageRef.child("thumb"+pt.getStorageHash()).getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    String filename = pt.getFilename();
+                    int iend = filename.indexOf('.');
+                    if(iend != -1)
+                        filename = filename.substring(0, iend);
+                    storageRef.child("thumb"+filename).getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                         @Override
                         public void onSuccess(byte[] bytes) {
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            Image i = new Image(pt.getFilename(), pt.getStorageHash(), bitmap);
+                            Image i = new Image(pt.getFilename(), bitmap);
                             imgs.add(i);
                             galleryAdapter.notifyDataSetChanged();
                         }
@@ -175,6 +202,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         Ref = extras.getString("Ref");
+        storageRefKey = extras.getString("storageRef");
 
         // setup objects
         btnLoadLocal = findViewById(R.id.btnLoadLocal);
@@ -182,6 +210,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
         gvGallery = (GridView)findViewById(R.id.gv);// activity_gallery.xml에서 선언한 Gallery를 연결
 
         imgs = new ArrayList<Image>();
+        pendingPhotos = new ArrayList<HotspotPhoto>();
         galleryAdapter = new GalleryAdapter(getApplicationContext(),imgs);
         gvGallery.setAdapter(galleryAdapter);
         gvGallery.setVerticalSpacing(gvGallery.getHorizontalSpacing());
@@ -213,6 +242,90 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                 //    TODO: Second it removes data from hotspot.
             }
         });
+        setGVEvent();
+    }
+
+    public Uri thumbnailURIFromOriginalURI(Uri selectedImageUri) {
+        long rowId = Long.valueOf(selectedImageUri.getLastPathSegment());
+        return uriToThumbnail(""+ rowId);
+    }
+    public Uri uriToThumbnail(String imageId) {
+        String[] projection = { MediaStore.Images.Thumbnails.DATA };
+        ContentResolver contentResolver = getContentResolver();
+        Cursor thumbnailCursor = contentResolver.query( MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, MediaStore.Images.Thumbnails.IMAGE_ID + "=?", new String[]{imageId}, null);
+        if (thumbnailCursor == null) {
+            return null;
+        }
+        else if (thumbnailCursor.moveToFirst()) {
+            int thumbnailColumnIndex = thumbnailCursor.getColumnIndex(projection[0]);
+            String thumbnailPath = thumbnailCursor.getString(thumbnailColumnIndex);
+            thumbnailCursor.close(); return Uri.parse(thumbnailPath);
+        }
+        else {
+            MediaStore.Images.Thumbnails.getThumbnail(contentResolver, Long.parseLong(imageId), MediaStore.Images.Thumbnails.MINI_KIND, null);
+            thumbnailCursor.close();
+            return uriToThumbnail(imageId);
+        }
+    }
+
+
+    private void uploadToFirebaseUri(final Uri uri) {
+        String filename0 = getUriFileName(uri);
+        int iend = filename0.indexOf('.');
+        if(iend != -1)
+            filename0 = filename0.substring(0, iend);
+        final String filename = filename0;
+        final String origFilename = getUriFileName(uri);
+        mDatabase.child("photos").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(filename)==false) {
+                    UploadTask uploadTask = storageRef.child(filename).putFile(uri);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(getApplicationContext(), "Error occured..", Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                            // ...
+
+                            // TODO: making thumbnail function
+                            //Uri thumbnailUri = thumbnailURIFromOriginalURI(uri);
+                            Uri thumbnailUri = uri;
+                            if(thumbnailUri==null)
+                                Log.d("HJ Debug", "thumbnail is null.");
+                            UploadTask uploadTask2 = storageRef.child("thumb"+filename).putFile(thumbnailUri);
+                            uploadTask2.addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Handle unsuccessful uploads
+                                    Toast.makeText(getApplicationContext(), "Error occured on thumbnail..", Toast.LENGTH_LONG).show();
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Log.d("HJ Debug", "thumbnail added.");
+                                    HotspotPhoto hp = new HotspotPhoto(origFilename, hotspotLongitude, hotspotLatitude);
+                                    mDatabase.child("photos").child(filename).setValue(hp);
+                                }
+                            });
+
+                        }
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Already have file with same name..", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -228,9 +341,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
 
                     Uri mImageUri=data.getData();
 
-                    // TODO: load to firebase storage (file name)
-                            // TODO: push file with filename->key, add file("thumb"key) with filename.
-                    // TODO: load to firebase database (filename, longitude, latitude, key)
+                    uploadToFirebaseUri(mImageUri);
                 } else {
                     if (data.getClipData() != null) {
                         ClipData mClipData = data.getClipData();
@@ -240,9 +351,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                             ClipData.Item item = mClipData.getItemAt(i);
                             Uri uri = item.getUri();
 
-                            // TODO: load to firebase storage (file name)
-                            // TODO: push file with filename->key, add file("thumb"key) with filename.
-                            // TODO: load to firebase database (filename, longitude, latitude, key)
+                            uploadToFirebaseUri(uri);
                         }
                         Log.d("Debug","SpotFlickr Debug: Selected Images" + mArrayUri.size());
                     }
@@ -257,5 +366,27 @@ public class HotspotGalleryActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public String getUriFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 }
