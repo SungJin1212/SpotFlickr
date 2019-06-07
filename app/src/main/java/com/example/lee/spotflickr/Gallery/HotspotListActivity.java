@@ -81,16 +81,16 @@ public class HotspotListActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 items.clear();
                 itemKeys.clear();
-                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                    HotspotList hl = userSnapshot.getValue(HotspotList.class);
-                    if(hl==null) {
-                        Toast.makeText(HotspotListActivity.this, "Does not have any hotspotlist.", Toast.LENGTH_LONG).show();
-                    } else {
+                if(dataSnapshot.getChildrenCount()==0) {
+                    tryAddWithName("Favorites");
+                } else {
+                    for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                        HotspotList hl = userSnapshot.getValue(HotspotList.class);
                         items.add(hl.getName());
                         itemKeys.add(userSnapshot.getKey());
                     }
+                    adapter.notifyDataSetChanged();
                 }
-                adapter.notifyDataSetChanged();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -147,6 +147,15 @@ public class HotspotListActivity extends AppCompatActivity {
                 listview.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
             }
         }
+    }
+    private ArrayList<String> getCheckedItems() {
+        ArrayList<String> res = new ArrayList<String>();
+        for (int i=0; i<items.size(); i++) {
+            if(listview.isItemChecked(i)) {
+                res.add(items.get(i));
+            }
+        }
+        return res;
     }
     private ArrayList<String> getCheckedItemKeys() {
         ArrayList<String> res = new ArrayList<String>();
@@ -282,6 +291,11 @@ public class HotspotListActivity extends AppCompatActivity {
         int pos = getCheckedPos();
         Log.d("HJ Debug", ""+pos);
         String target = items.get(pos);
+        if(target.equals("Favorites")) {
+            Toast.makeText(this, "Cannot Modify/Delete Favorites.", Toast.LENGTH_LONG).show();
+            clearCheck();
+            return;
+        }
         Log.d("HJ Debug", target);
         mDatabase.child("HotspotList").orderByChild("name").equalTo(target).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -302,6 +316,14 @@ public class HotspotListActivity extends AppCompatActivity {
     }
     private void tryDelete() {
         ArrayList<String> keys = getCheckedItemKeys();
+        ArrayList<String> selected_items = getCheckedItems();
+        for(int i=0; i<selected_items.size(); i++) {
+            if(selected_items.get(i).equals("Favorites")) {
+                keys.remove(i);
+                selected_items.remove(i);
+                Toast.makeText(this, "Cannot Modify/Delete Favorites.", Toast.LENGTH_LONG).show();
+            }
+        }
         for(String k: keys) {
             mDatabase.child("HotspotList").child(k).setValue(null);
         }
