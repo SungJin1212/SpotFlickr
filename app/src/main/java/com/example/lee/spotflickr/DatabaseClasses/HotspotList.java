@@ -1,17 +1,21 @@
 package com.example.lee.spotflickr.DatabaseClasses;
 
+import java.util.HashMap;
+
 public class HotspotList {
 
     //private int  id;
     private String name;
     private String userEmail;
+    private HashMap<String, Hotspot> hotspots;
     //private String description;
 
     public HotspotList() {
     }
-    public HotspotList(String name, String userEmail) {
+    public HotspotList(String name, String userEmail, HashMap<String, Hotspot> hotspots) {
         this.name = name;
         this.userEmail = userEmail;
+        this.hotspots = hotspots;
     }
 
     //public int getID() { return id; }
@@ -30,8 +34,8 @@ public class HotspotList {
 
     public void setUserEmail(String userEmail) {this.userEmail = userEmail; }
 
-    //public String getDescription() { return description; }
+    public HashMap<String, Hotspot> getHotspots() { return hotspots; }
 
-    //public void setDescription(String description) { this.description = description; }
+    public void setHotspots(HashMap<String, Hotspot> hotspots) { this.hotspots = hotspots; }
 }
 

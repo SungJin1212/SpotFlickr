@@ -217,10 +217,18 @@ public class HotspotListActivity extends AppCompatActivity {
         });
     }
     private void setListViewListener() {
+        final Context c = this;
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // move to Gallery Adapter
+                Intent intent = new Intent(c, HotspotActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("HotspotListKey",itemKeys.get(position));
+                intent.putExtras(extras);
+                // clean up all image to basic
+                clearCheck();
+                startActivity(intent);
             }
         });
         listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -278,7 +286,7 @@ public class HotspotListActivity extends AppCompatActivity {
                 return;
             }
         }
-        HotspotList hl = new HotspotList(name, firebaseUser.getEmail());
+        HotspotList hl = new HotspotList(name, firebaseUser.getEmail(), null);
         mDatabase.child("HotspotList").push().setValue(hl);
     }
     private void tryRenameWithName(final String name) {
