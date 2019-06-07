@@ -1,5 +1,6 @@
 package com.example.lee.spotflickr.Gallery;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -44,8 +45,9 @@ public class HotspotActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     DatabaseReference mDatabase;
+    String hotspotListKey;
 
-    private void setFirebase(String key) {
+    private void setFirebase() {
         //initializig firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -55,7 +57,7 @@ public class HotspotActivity extends AppCompatActivity {
             //그리고 profile 액티비티를 연다.
             startActivity(new Intent(getApplicationContext(), LoginActivity.class)); //추가해 줄 ProfileActivity
         }
-        mDatabase = FirebaseDatabase.getInstance().getReference("HotspotList").child(key);
+        mDatabase = FirebaseDatabase.getInstance().getReference("HotspotList").child(hotspotListKey);
         if(mDatabase==null) {
             Toast.makeText(HotspotActivity.this, "Such Hotspots Not Exists.", Toast.LENGTH_LONG).show();
             finish();
@@ -88,7 +90,7 @@ public class HotspotActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        String HotspotListKey = extras.getString("HotspotListKey");
+        hotspotListKey = extras.getString("HotspotListKey");
 
         // listview create, adapter setting
         items = new ArrayList<String>();
@@ -105,7 +107,7 @@ public class HotspotActivity extends AppCompatActivity {
         setBtnlistener();
         setListViewListener();
 
-        setFirebase(HotspotListKey);
+        setFirebase();
         syncHotspot();
     }
     private int getCheckCnt() {
@@ -202,10 +204,18 @@ public class HotspotActivity extends AppCompatActivity {
         });
     }
     private void setListViewListener() {
+        final Context c = this;
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // move to Gallery Adapter
+                Intent intent = new Intent(c, HotspotGalleryActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("Ref","HotspotList/"+hotspotListKey+"/hotspots/"+itemKeys.get(position));
+                intent.putExtras(extras);
+                // clean up all image to basic
+                clearCheck();
+                startActivity(intent);
             }
         });
         listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -263,7 +273,7 @@ public class HotspotActivity extends AppCompatActivity {
                 return;
             }
         }
-        Hotspot h = new Hotspot(name, -1.1, -1.1);
+        Hotspot h = new Hotspot(name, -1.1, -1.1, null);
         mDatabase.child("hotspots").push().setValue(h);
     }
     private void tryRenameWithName(final String name) {

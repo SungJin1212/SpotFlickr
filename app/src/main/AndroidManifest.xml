@@ -117,6 +117,18 @@
             android:screenOrientation="portrait">
 
         </activity>
+        <activity
+            android:name="com.example.lee.spotflickr.Gallery.HotspotGalleryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name="com.example.lee.spotflickr.Gallery.HotspotImageActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+
+        </activity>
 
     </application>
 

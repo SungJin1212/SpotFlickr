@@ -1,17 +1,21 @@
 package com.example.lee.spotflickr.DatabaseClasses;
 
+import java.util.HashMap;
+
 public class Hotspot {
 
     private String name;
     private double longitude;
     private double latitude;
+    private HashMap<String, HotspotPhoto> photos;
 
     public Hotspot() {
     }
-    public Hotspot(String name, double longitude, double latitude) {
+    public Hotspot(String name, double longitude, double latitude, HashMap<String, HotspotPhoto> photos) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.photos = photos;
     }
 
     public String getName() {
@@ -37,5 +41,6 @@ public class Hotspot {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
+
 }
 
