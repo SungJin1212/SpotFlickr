@@ -82,7 +82,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                 if(iend != -1)
                     filename = filename.substring(0, iend);
                 extras.putString("Ref",Ref+"/photos/"+filename);
-                extras.putString("StorageRef",Ref+filename);
+                extras.putString("storageRefKey",storageRefKey+"/"+filename);
                 intent.putExtras(extras);
                 // clean up all image to basic
                 galleryAdapter.clearChecks();
@@ -196,7 +196,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gallery);
+        setContentView(R.layout.activity_hotspot_gallery);
 
         // load parameter from other activities
         Intent intent = getIntent();

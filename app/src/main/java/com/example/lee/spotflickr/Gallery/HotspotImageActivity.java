@@ -1,7 +1,10 @@
 package com.example.lee.spotflickr.Gallery;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +12,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.lee.spotflickr.DatabaseClasses.HotspotPhoto;
+import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.Iterator;
 
 // ImageActivity for image display
 /*
@@ -22,73 +40,110 @@ import com.example.lee.spotflickr.R;
             TODO: download button: download image related data to firebase and user storage
  */
 public class HotspotImageActivity extends AppCompatActivity implements View.OnClickListener {
-    // Define U and F for UserImage and FlickrImage processing purpose
-    private static final int U = 0;
-    private static final int F = 1;
 
-    private Button btnData;
+    private Button btnRename;
+    private Button btnDelete;
+    private Button btnRoute;
+    // firebase
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    FirebaseStorage firebaseStorage;
+    DatabaseReference mDatabase;
+    StorageReference storageRef;
+    String storageRefKey;
+    String Ref;
 
-    private int purpose;
+    private String filename;
+    private double hotspotLongitude;
+    private double hotspotLatitude;
+
     private void setUI() {
         //initializing views
-        btnData = (Button) findViewById(R.id.buttonData);
+        btnRename = (Button)findViewById(R.id.buttonRename);
+        btnDelete = (Button)findViewById(R.id.buttonDelete);
+        btnRoute = (Button)findViewById(R.id.buttonRoute);
     }
 
     private void setButton() {
         //button click event
-        btnData.setOnClickListener(this);
+        btnRename.setOnClickListener(this);
+        btnDelete.setOnClickListener(this);
+        btnRoute.setOnClickListener(this);
+    }
+
+    private void setFirebase() {
+        //initializig firebase auth object
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseStorage = FirebaseStorage.getInstance();
+        if (firebaseUser == null) {
+            //이미 로그인 되었다면 이 액티비티를 종료함
+            finish();
+            //그리고 profile 액티비티를 연다.
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class)); //추가해 줄 ProfileActivity
+        }
+        mDatabase = FirebaseDatabase.getInstance().getReference(Ref);
+        storageRef = firebaseStorage.getReference(storageRefKey);
+        if(mDatabase==null) {
+            Toast.makeText(HotspotImageActivity.this, "Such Image Not Exists.", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                filename = dataSnapshot.child("filename").getValue(String.class);
+                hotspotLongitude = dataSnapshot.child("longitude").getValue(Double.class);
+                hotspotLatitude = dataSnapshot.child("latitude").getValue(Double.class);
+                storageRef.getBytes(1024*1024*500).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Image i = new Image(filename, bitmap);
+                        ImageView myImage = (ImageView) findViewById(R.id.imageView);
+                        myImage.setImageBitmap(i.getImg());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void init() {
         setUI();
         setButton();
+        setFirebase();
     }
 
     @Override
     public void onClick(View view) {
-        if (view == btnData) {
-            if(purpose == U) {
-                // TODO: upload to flickr
-                Toast.makeText(getApplicationContext(), "DEBUG: upload to flickr button clicked", Toast.LENGTH_LONG).show();
-            } else {
-                // TODO: download from flickr
-                Toast.makeText(getApplicationContext(), "DEBUG: download from flickr button clicked", Toast.LENGTH_LONG).show();
-            }
+        if(view ==btnRename) {
+
+        } else if(view == btnDelete) {
+
+        } else if(view==btnRoute) {
+
         }
-    }
-/*
-    private boolean checkDisplayLocal(String query) {
-        Image img = new Image(query, false);
-        if(img.getImg()==null)
-            return false;
-        ImageView myImage = (ImageView) findViewById(R.id.imageView);
-        myImage.setImageBitmap(img.getImg());
-        return true;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        String fromActivity = extras.getString("Purpose");
-        String query = extras.getString("Query");
-        Log.d("Debug", "HJ Debug: "+fromActivity+query);
+        storageRefKey = extras.getString("storageRefKey");
+        Ref = extras.getString("Ref");
 
-        if(fromActivity.equals("U")) {   // User Image Processing
-            purpose = U;
-            setContentView(R.layout.activity_user_image);
-            init();
-            if(! checkDisplayLocal(query)) {
-                // TODO: request to firebase
-            }
-        } else if(fromActivity.equals("F")) {    // Flickr Image Processing
-            purpose = F;
-            setContentView(R.layout.activity_flickr_image);
-            init();
-            // TODO: request to flickr
-        }
+        setContentView(R.layout.activity_hotspot_image);
+        init();
     }
-    */
+
 }
