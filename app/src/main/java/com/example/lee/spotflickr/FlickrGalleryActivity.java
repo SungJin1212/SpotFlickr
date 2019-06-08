@@ -2,18 +2,27 @@ package com.example.lee.spotflickr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lee.spotflickr.DatabaseClasses.HotspotPhoto;
 import com.example.lee.spotflickr.Gallery.GalleryAdapter;
 import com.example.lee.spotflickr.Gallery.Image;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -29,12 +38,13 @@ public class FlickrGalleryActivity extends AppCompatActivity {
     // location parameter
     double longitude;
     double latitude;
+    Bitmap bitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photolistactivity);
-
+        setContentView(R.layout.activity_flickr_gallery);
 
         init();
     }
@@ -61,16 +71,49 @@ public class FlickrGalleryActivity extends AppCompatActivity {
                 .getLayoutParams();
         mlp.setMargins(0, gvGallery.getHorizontalSpacing(), 0, 0);
 
-        Log.d("Debug", "HJ Debug: url size:"+url.size());
-        Log.d("Debug", "HJ Debug: longitude:"+longitude);
-
         for(String s : url) {
-            Log.d("Debug", "HJ Debug:url : "+s);
-            temp += s;
+            imgs.add(ImageFromUrl(s));
         }
+        galleryAdapter.notifyDataSetChanged();
 
+        // register intent for normal gallery -> custom gallery copy intent
+        btnSaveHotspot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: naming prompt
+                    //TODO: move to hotspot list selection with name, longitude, latitude parameter.
+            }
+        });
     }
 
+    private Image ImageFromUrl(final String urlString) {
+        Image i;
+        Thread th = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(urlString);
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
 
+                    InputStream is = conn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                } catch(IOException e) {
 
+                }
+            }
+        };
+        th.start();
+        try {
+            th.join();
+            i = new Image(getFileNameFromUrlString(urlString), bitmap);
+            return i;
+        } catch(InterruptedException e) {
+            return null;
+        }
+    }
+    public static String getFileNameFromUrlString(String urlString) {
+        return urlString.substring(urlString.lastIndexOf('/') + 1);
+    }
 }
