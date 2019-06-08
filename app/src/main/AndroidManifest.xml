@@ -119,7 +119,7 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.example.lee.spotflickr.PhotoListActivity"
+            android:name="com.example.lee.spotflickr.FlickrGalleryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
         </activity>
