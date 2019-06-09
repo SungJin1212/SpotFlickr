@@ -79,14 +79,16 @@
         android:layout_weight="3"
         android:orientation="vertical">
 
-        <Switch
-            android:id="@+id/switch1"
+        <TextView
+            android:id="@+id/deleteHeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:text="Sync Flickr Account"
+            android:layout_marginTop="15dp"
+
+            android:text="Delete Account"
             android:textColor="@color/text_color_default"
-            android:textSize="@dimen/text_size_Medium" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/deleteText"
@@ -96,23 +98,22 @@
             android:layout_marginTop="15dp"
             android:text="To verify deletion of account and all related data, enter password below."
             android:textColor="@color/text_color_default"
-            android:textSize="@dimen/text_size_default"
-            />
+            android:textSize="@dimen/text_size_default" />
 
 
         <EditText
             android:id="@+id/verifiedPassword"
-            android:theme="@style/EditTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="15dp"
-
             android:ems="10"
+
             android:hint="Password"
             android:inputType="textPassword"
+            android:textColor="@color/text_color_default"
             android:textColorHint="@color/hint_color_default"
-            android:textColor="@color/text_color_default" />
+            android:theme="@style/EditTheme" />
 
         <Button
             android:id="@+id/delete"
@@ -125,18 +126,6 @@
             android:clickable="true"
             android:text="Delete Account"
             android:textColor="@android:color/white" />
-
-
-        <TextView
-            android:id="@+id/deleteHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="15dp"
-
-            android:text="Delete Account"
-            android:textColor="@color/text_color_default"
-            android:textSize="18sp" />
 
 
         <Button

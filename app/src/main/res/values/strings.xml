@@ -6,5 +6,6 @@
     <string name="FindingPassword">FindingPassword</string>
     <string name="Done">Done</string>
     <string name="Back">Back</string>
+    <string name="edit_profile">Edit Profile</string>
 
 </resources>

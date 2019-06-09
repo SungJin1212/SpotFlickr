@@ -8,10 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.Toast;
 
 import com.example.lee.spotflickr.PopUps.DeleteAccountDialogFragment;
+import com.example.lee.spotflickr.PopUps.PopUp;
 import com.example.lee.spotflickr.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -34,7 +33,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     Button changePassword;
     Button deleteAccount;
     Button backButton;
-    Switch flickrSwitch;
     String email;
     FirebaseUser user;
     FirebaseDatabase myDB;
@@ -43,7 +41,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_profile);
+        setContentView(R.layout.activity_edit_profile_2);
         myAuth = FirebaseAuth.getInstance();
         init();
     }
@@ -63,8 +61,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         changePassword = findViewById(R.id.changepass);
         deleteAccount = findViewById(R.id.delete);
         backButton = findViewById(R.id.back);
-        flickrSwitch = findViewById(R.id.switch1);
-
     }
 
     public void setFirebase(){
@@ -96,19 +92,19 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()){
-                                    toastMessage("Password successfully updated");
+                                    showPopUpNoticeDialog("Success", "Password successfully updated");
                                 } else {
-                                    toastMessage("Error when updating password");
+                                    showPopUpNoticeDialog("Error", "Error when updating password");
                                 }
                             }
                         });
                     } else {
-                        toastMessage("Incorrect current password was entered");
+                        showPopUpNoticeDialog("Error", "Incorrect current password was entered");
                     }
                 }
             });
         } else {
-            toastMessage("New passwords do not match");
+            showPopUpNoticeDialog("Error", "New passwords do not match");
         }
     }
 
@@ -122,7 +118,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                     showNoticeDialog();
                 }
                 else {
-                    toastMessage("Incorrect password was entered");
+                    showPopUpNoticeDialog("Error", "Incorrect password was entered");
                 }
             }
         });
@@ -156,30 +152,32 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        toastMessage("Account has been deleted");
+                        showPopUpNoticeDialog("Account Details", "Account has been deleted");
                         myRef.removeValue();
                         // TODO Delete all related data; hotspotlists, photos etc.
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                     }
                     else {
-                        toastMessage("Something went wrong when trying to delete account.");
+                        showPopUpNoticeDialog("Error", "Something went wrong when trying to delete account.");
                     }
                 }
             });
         } catch (Exception e){
-            toastMessage("Account could not be deleted");
+            showPopUpNoticeDialog("Error", "Account could not be deleted");
         }
     }
+
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         verifyPassword.setText("");
     }
 
-    public void toastMessage(String message){
-        Toast.makeText(EditProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+    public void showPopUpNoticeDialog(String title, String message) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = PopUp.newInstance(title, message);
+        dialog.show(getSupportFragmentManager(), "EditProfilenFragment");
     }
-
 
 }
