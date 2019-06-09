@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lee.spotflickr.MainActivity;
+import com.example.lee.spotflickr.PopUps.PopUp;
 import com.example.lee.spotflickr.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -97,17 +99,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String password = etPassword.getText().toString().trim();
         final String nickname = etNickname.getText().toString().trim();
         //email과 password가 비었는지 아닌지를 체크 한다.
-        if (TextUtils.isEmpty(email) || !(email.contains("@"))) {
-            Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(email) || !(email.contains("@")) || !(email.contains("."))) {
+            showNoticeDialog("Signup Error", "Please enter a valid email address");
             return;
         }
         if (TextUtils.isEmpty(password) || (password.length() < 6)) {
-            Toast.makeText(this, "Please enter a password longer than 6 characters", Toast.LENGTH_SHORT).show();
+            showNoticeDialog("Signup Error", "Please enter a password longer than 6 characters");
             return;
         }
 
         if (TextUtils.isEmpty(nickname)) {
-            Toast.makeText(this, "Please enter a nickname", Toast.LENGTH_SHORT).show();
+            showNoticeDialog("Signup Error", "Please enter a nickname");
             return;
         }
 
@@ -127,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             }
                             catch(Exception e){
                                 userID = "";
-                                toastMessage("No user ID created");
+                                showNoticeDialog("Registration Error", "No user ID created");
                             }
                             //finish();
                             RegisterNickname(nickname);
@@ -144,24 +146,26 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()){
                                                     finish();
-                                                    toastMessage("Successful registration! Please verify account by clicking on the link in the email sent to " + email);
+                                                    showNoticeDialog("Successful registration", "Please verify account by clicking on the link in the email sent to " + email);
                                                     Log.d("Debug","Success");
                                                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                                 }
                                                 else {
-                                                    toastMessage(task.getException().getMessage());
+                                                    showNoticeDialog("Registration Error", task.getException().getMessage());
                                                 }
                                             }
                                         });
 
                                     }
                                     else{
-                                        toastMessage(task.getException().getMessage());
+                                        showNoticeDialog("Registration Error", task.getException().getMessage());
+
                                     }
                                 }
                             });
                         } else {
                             //에러발생시
+                            showNoticeDialog("Registration Error", "Email is already in use");
                             tvMessage.setText("Registration Error!\nEmail is already in use.");
                         }
                         progressDialog.dismiss();
@@ -206,7 +210,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    public void toastMessage(String message){
-        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+    public void showNoticeDialog(String title, String message) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = PopUp.newInstance(title, message);
+        dialog.show(getSupportFragmentManager(), "RegisterFragmet");
     }
+
 }

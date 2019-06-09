@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lee.spotflickr.MainActivity;
+import com.example.lee.spotflickr.PopUps.PopUp;
 import com.example.lee.spotflickr.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -87,11 +89,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = etPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            toastMessage("Please enter your email address");
+            showNoticeDialog("Login Error", "Please enter your email address");
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            toastMessage("Please enter your password");
+            showNoticeDialog("Login Error","Please enter your password");
             return;
         }
 
@@ -110,14 +112,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             } else {
-                                toastMessage("You need to verify your account by clicking the link in the email that was sent to you");
+                                showNoticeDialog("Login Error",
+                                        "You need to verify your account by clicking the link in the email that was sent to you");
                             }
                         } else {
-                            toastMessage(task.getException().getMessage());
+                            showNoticeDialog("Login Failure", "Incorrect Password");
                             tvMessage.setText("Login failure\n - Incorrect password.\n - Server fail");
                         }
                     }
                 });
+    }
+
+    public void showNoticeDialog(String title, String message) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = PopUp.newInstance(title, message);
+        dialog.show(getSupportFragmentManager(), "LoginFragment");
     }
 
 
@@ -136,7 +145,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void toastMessage(String message){
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-    }
 }

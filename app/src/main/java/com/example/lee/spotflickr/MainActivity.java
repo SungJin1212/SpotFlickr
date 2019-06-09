@@ -1,16 +1,20 @@
 package com.example.lee.spotflickr;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,23 +25,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.lee.spotflickr.Gallery.GalleryActivity;
 import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.Login.ProfileActivity;
 import com.example.lee.spotflickr.Gallery.TakenPhotoActivity;
 
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-
 import com.example.lee.spotflickr.Gallery.HotspotListActivity;
-import com.example.lee.spotflickr.Login.LoginActivity;
 import com.example.lee.spotflickr.Map.MapPoint;
+import com.example.lee.spotflickr.PopUps.GiveAccessPopUp;
 import com.example.lee.spotflickr.retrofit.APIClient;
 import com.example.lee.spotflickr.retrofit.parser.Photo;
 import com.example.lee.spotflickr.retrofit.parser.PhotoList;
@@ -46,9 +40,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
-import com.skt.Tmap.TMapLabelInfo;
 import com.skt.Tmap.TMapMarkerItem;
-import com.skt.Tmap.TMapMarkerItem2;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
@@ -57,20 +49,19 @@ import com.skt.Tmap.TMapView;
 
 
 import java.io.ByteArrayOutputStream;
-import org.apache.log4j.chainsaw.Main;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, TMapGpsManager.onLocationChangedCallback {
-
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, TMapGpsManager.onLocationChangedCallback, GiveAccessPopUp.NoticeDialogListener {
+    private boolean started;
+    private int counter;
     private String TokenURL;
     private final Context context = this;
     private Gson gson;
@@ -85,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double distance;
     final static double MAXDISTANCE = 200000; // 2km.
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int MY_PERMISSIONS_GET_LOCATION = 2;
+    static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 3; // If your app uses the WRITE_EXTERNAL_STORAGE permission, then it implicitly has permission to read the external storage as well.
+    static final int MY_PERMISSIONS_CAMERA = 4;
+    HashMap<Integer, String> permissions = new HashMap<>();
 
     FirebaseAuth firebaseAuth;
     FrameLayout Tmap;
@@ -124,9 +119,94 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }*/
 
     private void init() throws IOException {
-        btnSetting();
-        mapSetting();
         setFirebase();
+        setPermissions();
+        counter = 0;
+        started = false;
+        getPermission(permissions.get(2), 2);
+
+        btnSetting();
+    }
+
+    private void setPermissions(){
+        // Add keys and values (my permission, anrdoid permission)
+        permissions.put(MY_PERMISSIONS_GET_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.put(MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.put(MY_PERMISSIONS_CAMERA, Manifest.permission.CAMERA);
+    }
+
+
+    private void getPermission(String currentPermission, int myPermission){
+
+        if (ContextCompat.checkSelfPermission(this, currentPermission)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{currentPermission},
+                    myPermission);
+        } else {
+            if (myPermission == 2) {
+                if (!started && counter < 2) {
+                    mapSetting();
+                    started = true;
+                }
+            } else if (myPermission == 4) {
+                takePhoto();
+            } else {
+                startActivity(new Intent(this, HotspotListActivity.class));
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+            case MY_PERMISSIONS_GET_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    started = true;
+                    mapSetting();
+                } else {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        counter ++;
+                        showNoticeDialog("Location Access", "Without location access, you will not be able to use this application");
+                        if (counter == 2){
+                            System.exit(0);
+                        }
+                    }
+                }
+                return;
+            }
+
+            case MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(new Intent(this, HotspotListActivity.class));
+                } else {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        showNoticeDialog("External Storage Access", "Without external storage access, you will not be able to use this application");
+                    }
+                }
+                return;
+            }
+            case MY_PERMISSIONS_CAMERA: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    takePhoto();
+                } else {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                        showNoticeDialog("Camera Access", "Without camera access, you will not be able to take photos using this application");
+                    }
+                }
+            }
+        }
+    }
+
+    public void showNoticeDialog(String title, String message) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = GiveAccessPopUp.newInstance(title, message);
+        dialog.show(getSupportFragmentManager(), "MainFragment");
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        getPermission(permissions.get(2), 2);
     }
 
     private void mapSetting() {
@@ -321,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 item.setTMapPoint(point);
                 item.setName(m_mapPoint.get(i).getName());
-                item.setVisible(item.VISIBLE);
+                item.setVisible(TMapMarkerItem.VISIBLE);
                 item.setIcon(bitmap);
 
                 // 풍선뷰 안의 항목에 글을 지정합니다.
@@ -347,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //poi_dot은 지도에 꼽을 빨간 핀 이미지입니다
                 item.setTMapPoint(point);
                 item.setName(m_mapPoint.get(i).getName());
-                item.setVisible(item.VISIBLE);
+                item.setVisible(TMapMarkerItem.VISIBLE);
                 item.setIcon(bitmap);
                 // 풍선뷰 안의 항목에 글을 지정합니다.
                 item.setCalloutTitle(m_mapPoint.get(i).getName());
@@ -532,11 +612,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view == btCamera) { //take photo.
-            takePhoto();
+            getPermission(permissions.get(4), 4);
         }
         if (view == btMyHotPlace) {
+            getPermission(permissions.get(3), 3);
+
             Log.d("HJ Debug", "hotlist");
-            startActivity(new Intent(this, HotspotListActivity.class));
 
         }
     }
