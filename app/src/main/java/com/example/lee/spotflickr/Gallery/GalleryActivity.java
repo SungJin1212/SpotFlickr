@@ -46,6 +46,7 @@ public class GalleryActivity extends AppCompatActivity {
     String[] imgs;
 
 
+/*
     public String getUriFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
@@ -100,7 +101,6 @@ public class GalleryActivity extends AppCompatActivity {
         }
         return true;
     }
-
     protected String requestFirebaseUsername() {
         //TODO: request firebase current user's username
 
@@ -303,4 +303,5 @@ public class GalleryActivity extends AppCompatActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+    */
 }

@@ -5,22 +5,28 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 
 public class Image {
-    private String path;
-    private final int THUMBSIZE = 64;
+    private String filename;
     private Bitmap img;
     private boolean isChecked = false;
+    private boolean imgExists = false;
 
-    public Image(String filename, boolean makeThumb) {
-        this.path = filename;
-        if(makeThumb) {
-            img = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(path),
-                    THUMBSIZE, THUMBSIZE);
-        } else {
-            img = BitmapFactory.decodeFile(path);
-        }
+    public Image(String filename, Bitmap img) {
+        this.filename = filename;
+        this.img = img;
+        imgExists = true;
     }
+    public void setExists(boolean t) {
+        imgExists = t;
+    }
+    public boolean getExists() {
+        return imgExists;
+    }
+    public String getFilename() {
+        return filename;
+    }
+
+
     public boolean isChecked() {return isChecked;}
     public void toggleChecked() {isChecked = !isChecked;}
     public Bitmap getImg() {return img;}
-    public String getPath() {return path;}
 }

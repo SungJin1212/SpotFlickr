@@ -61,7 +61,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     }
-
+/*
     private boolean checkDisplayLocal(String query) {
         Image img = new Image(query, false);
         if(img.getImg()==null)
@@ -95,4 +95,5 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             // TODO: request to flickr
         }
     }
+    */
 }

@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="5dp"
     android:background="@color/background_default"
     android:orientation="vertical">
 
@@ -40,13 +39,30 @@
 
 
     <FrameLayout
-        android:id="@+id/Tmap"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="6"
         android:background="@android:color/transparent"
-        android:orientation="vertical"></FrameLayout>
+        >
+        <android.support.v4.app.FragmentTabHost
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/Tmap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+        />
+
+        <ImageButton
+            android:id="@+id/btnMyLocation"
+            android:layout_width="@dimen/small_button_size"
+            android:layout_height="@dimen/small_button_size"
+            android:layout_gravity="bottom|right"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/current_location"
+             />
+
+    </FrameLayout>
 
 
     <LinearLayout
@@ -102,6 +118,7 @@
             android:background="@color/background_default"
             android:text="Pro\nfile"
             android:textColor="@color/text_color_default" />
+
 
     </LinearLayout>
 
