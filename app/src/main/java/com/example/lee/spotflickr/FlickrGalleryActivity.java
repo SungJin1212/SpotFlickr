@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -84,6 +85,21 @@ public class FlickrGalleryActivity extends AppCompatActivity {
                     //TODO: move to hotspot list selection with name, longitude, latitude parameter.
             }
         });
+        setGVEvent();
+    }
+    private void setGVEvent() {
+        gvGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(context, FlickrImageActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("mUrl", imgs.get(position).getmUrl());
+                intent.putExtras(extras);
+                // clean up all image to basic
+                galleryAdapter.clearChecks();
+                startActivity(intent);
+            }
+        });
     }
 
     private Image ImageFromUrl(final String urlString) {
@@ -108,6 +124,7 @@ public class FlickrGalleryActivity extends AppCompatActivity {
         try {
             th.join();
             i = new Image(getFileNameFromUrlString(urlString), bitmap);
+            i.setmUrl(urlString);
             return i;
         } catch(InterruptedException e) {
             return null;

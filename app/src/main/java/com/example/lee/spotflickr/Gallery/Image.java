@@ -9,11 +9,13 @@ public class Image {
     private Bitmap img;
     private boolean isChecked = false;
     private boolean imgExists = false;
+    private String mUrl;
 
     public Image(String filename, Bitmap img) {
         this.filename = filename;
         this.img = img;
         imgExists = true;
+        mUrl="";
     }
     public void setExists(boolean t) {
         imgExists = t;
@@ -25,6 +27,8 @@ public class Image {
         return filename;
     }
 
+    public String getmUrl() {return mUrl;}
+    public void setmUrl(String url){this.mUrl = url;}
 
     public boolean isChecked() {return isChecked;}
     public void toggleChecked() {isChecked = !isChecked;}
