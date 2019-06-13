@@ -1,6 +1,8 @@
 package com.example.lee.spotflickr;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,12 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lee.spotflickr.DatabaseClasses.HotspotPhoto;
 import com.example.lee.spotflickr.Gallery.GalleryAdapter;
+import com.example.lee.spotflickr.Gallery.HotspotActivity;
 import com.example.lee.spotflickr.Gallery.Image;
 
 import java.io.IOException;
@@ -81,12 +85,54 @@ public class FlickrGalleryActivity extends AppCompatActivity {
         btnSaveHotspot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: naming prompt
+                textDialog("Add Hotspot", "Please Name Hotspot.");
+                //TODO: naming prompt => get name
                     //TODO: move to hotspot list selection with name, longitude, latitude parameter.
+
             }
         });
         setGVEvent();
     }
+
+    private void textDialog(String title, String content) {
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(title);
+        alert.setMessage(content);
+
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String hotspotName = input.getText().toString();
+                if(hotspotName.trim().equals("")) {
+                    Toast.makeText(FlickrGalleryActivity.this, "Invalid hotspot name.", Toast.LENGTH_LONG).show();
+                } else {
+                    Intent intent = new Intent(context, FlickrHotspotListActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("hotspotName", hotspotName.trim());
+                    extras.putDouble("longitude", longitude);
+                    extras.putDouble("latitude", latitude);
+                    intent.putExtras(extras);
+                    // clean up all image to basic
+                    galleryAdapter.clearChecks();
+                    startActivity(intent);
+                }
+
+            }
+        });
+        alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Canceled.
+            }
+        });
+        alert.show();
+        Log.d("HJ Debug", "alert showed.");
+    }
+
+
     private void setGVEvent() {
         gvGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

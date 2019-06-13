@@ -250,11 +250,12 @@ public class HotspotActivity extends AppCompatActivity {
                 String value = input.getText().toString();
                 if(value.trim().equals("")) {
                     Toast.makeText(HotspotActivity.this, "Invalid hotspot name.", Toast.LENGTH_LONG).show();
-                }
-                if(actionType==0) {
-                    tryAddWithName(value);
                 } else {
-                    tryRenameWithName(value);
+                    if (actionType == 0) {
+                        tryAddWithName(value);
+                    } else {
+                        tryRenameWithName(value);
+                    }
                 }
             }
         });
