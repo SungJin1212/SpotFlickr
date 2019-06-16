@@ -30,6 +30,7 @@ import com.example.lee.spotflickr.MainActivity;
 import com.example.lee.spotflickr.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -252,10 +253,40 @@ public class HotspotGalleryActivity extends AppCompatActivity {
         btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Trying to remove images from firebase...", Toast.LENGTH_LONG).show();
+
                 // TODO: request image remove on firebase
                 //    TODO: First it removes data from storage.
                 //    TODO: Second it removes data from hotspot.
+                ArrayList<Image> imgs1 = galleryAdapter.popCheckedImage();
+                if(imgs1.size()!=1) {
+                    Toast.makeText(getApplicationContext(), "Please select one image for deletion..", Toast.LENGTH_LONG).show();
+                }
+                for(final Image iv: imgs1) {
+                    String filename = iv.getFilename();
+                    int iend = filename.indexOf('.');
+                    if(iend != -1)
+                        filename = filename.substring(0, iend);
+                    final String filename0 = filename;
+                    Task initTask = mDatabase.child("photos").child(filename0).setValue(null);
+
+                    initTask.addOnSuccessListener(new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            storageRef.child("thumb"+filename0).delete();
+                            storageRef.child(filename0).delete();
+                            imgs.remove(iv);
+                            galleryAdapter.notifyDataSetChanged();
+                            Toast.makeText(getApplicationContext(), "Deletion Success..", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    initTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Deletion Failed..", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
         });
         setGVEvent();
