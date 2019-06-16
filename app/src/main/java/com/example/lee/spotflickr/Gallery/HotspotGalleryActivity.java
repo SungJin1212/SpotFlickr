@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.example.lee.spotflickr.DatabaseClasses.Hotspot;
 import com.example.lee.spotflickr.DatabaseClasses.HotspotPhoto;
 import com.example.lee.spotflickr.Login.LoginActivity;
+import com.example.lee.spotflickr.MainActivity;
 import com.example.lee.spotflickr.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -237,7 +238,14 @@ public class HotspotGalleryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO: pass param - main, no finish
-
+                Intent intent = new Intent(context, MainActivity.class);
+                Bundle extras = new Bundle();
+                extras.putDouble("RouteLong", hotspotLongitude);
+                extras.putDouble("RouteLat", hotspotLatitude);
+                intent.putExtras(extras);
+                // clean up all image to basic
+                galleryAdapter.clearChecks();
+                startActivity(intent);
             }
         });
         // remove function - remove checked images from user storage and firebase

@@ -85,6 +85,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static final int MY_PERMISSIONS_CAMERA = 4;
     HashMap<Integer, String> permissions = new HashMap<>();
 
+    // For Custom Routing
+    Double RouteLong;
+    Double RouteLat;
+
 
     FirebaseAuth firebaseAuth;
     FrameLayout Tmap;
@@ -107,7 +111,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if(extras==null) {
+            RouteLong = -1.0;
+            RouteLat = -1.0;
+        } else {
+            RouteLong = extras.getDouble("RouteLong");
+            RouteLat = extras.getDouble("RouteLat");
+        }
+        Log.d("Debug", "HJ Debug"+RouteLong);
         try {
             Log.d("Debug", "HJ Debug");
             init();
