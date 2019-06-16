@@ -18,7 +18,6 @@
 
         <EditText
             android:id="@+id/newpass"
-            android:theme="@style/EditTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -27,11 +26,11 @@
             android:inputType="textPassword"
             android:textColor="@color/text_color_default"
             android:textColorHint="@color/hint_color_default"
-            android:textSize="@dimen/text_size_Medium" />
+            android:textSize="@dimen/text_size_Medium"
+            android:theme="@style/EditTheme" />
 
         <EditText
             android:id="@+id/repeatnewpass"
-            android:theme="@style/EditTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -41,11 +40,11 @@
             android:inputType="textPassword"
             android:textColor="@color/text_color_default"
             android:textColorHint="@color/hint_color_default"
-            android:textSize="@dimen/text_size_Medium" />
+            android:textSize="@dimen/text_size_Medium"
+            android:theme="@style/EditTheme" />
 
         <EditText
             android:id="@+id/currentpass"
-            android:theme="@style/EditTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
@@ -56,7 +55,8 @@
             android:inputType="textPassword"
             android:textColor="@color/text_color_default"
             android:textColorHint="@color/hint_color_default"
-            android:textSize="@dimen/text_size_Medium" />
+            android:textSize="@dimen/text_size_Medium"
+            android:theme="@style/EditTheme" />
 
         <Button
             android:id="@+id/changepass"
@@ -101,44 +101,60 @@
             android:textSize="@dimen/text_size_default" />
 
 
-        <EditText
-            android:id="@+id/verifiedPassword"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="15dp"
-            android:ems="10"
+            android:orientation="horizontal">
 
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textColor="@color/text_color_default"
-            android:textColorHint="@color/hint_color_default"
-            android:theme="@style/EditTheme" />
+            <EditText
+                android:id="@+id/verifiedPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="15dp"
+                android:ems="10"
 
-        <Button
-            android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="15dp"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textColor="@color/text_color_default"
+                android:textColorHint="@color/hint_color_default"
+                android:theme="@style/EditTheme" />
 
-            android:background="@android:color/holo_red_dark"
-            android:clickable="true"
-            android:text="Delete Account"
-            android:textColor="@android:color/white" />
+            <Button
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="15dp"
+
+                android:background="@android:color/holo_red_dark"
+                android:clickable="true"
+                android:text="Delete Account"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
 
-        <Button
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="15dp"
-            android:background="@color/transparent_botton"
-            android:clickable="true"
-            android:text="@string/Back"
-            android:textColor="@android:color/black" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+
+            >
+
+            <Button
+                android:id="@+id/back"
+                style="@style/NoShadowButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/background_default"
+                android:text="@string/Back"
+                android:textColor="@color/text_color_default" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
