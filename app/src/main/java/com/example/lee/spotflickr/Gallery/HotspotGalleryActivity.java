@@ -53,7 +53,6 @@ import java.util.Iterator;
 public class HotspotGalleryActivity extends AppCompatActivity {
     private Context context = this;
     private Button btnLoadLocal;
-    private Button btnRoute;
     private Button btnRemove;
     int PICK_IMAGE_MULTIPLE = 1;
     private GridView gvGallery;
@@ -208,7 +207,6 @@ public class HotspotGalleryActivity extends AppCompatActivity {
 
         // setup objects
         btnLoadLocal = findViewById(R.id.btnLoadLocal);
-        btnRoute = findViewById(R.id.btnRoute);
         btnRemove = findViewById(R.id.btnRemove);
         gvGallery = (GridView)findViewById(R.id.gv);// activity_gallery.xml에서 선언한 Gallery를 연결
 
@@ -233,20 +231,6 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
-            }
-        });
-        btnRoute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: pass param - main, no finish
-                Intent intent = new Intent(context, MainActivity.class);
-                Bundle extras = new Bundle();
-                extras.putDouble("RouteLong", hotspotLongitude);
-                extras.putDouble("RouteLat", hotspotLatitude);
-                intent.putExtras(extras);
-                // clean up all image to basic
-                galleryAdapter.clearChecks();
-                startActivity(intent);
             }
         });
         // remove function - remove checked images from user storage and firebase
