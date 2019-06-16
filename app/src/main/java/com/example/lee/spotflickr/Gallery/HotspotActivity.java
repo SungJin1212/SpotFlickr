@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -173,7 +174,7 @@ public class HotspotActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textDialog(0, "Add Hotspot", "Please Name Hotspot.");
+                addHotspotTextDialog("Add Hotspot", "Please type Hotspot name, longitude, and latitude.");
                 clearCheck();
             }
         });
@@ -187,7 +188,7 @@ public class HotspotActivity extends AppCompatActivity {
                     Toast.makeText(HotspotActivity.this, "Please select only one list to rename.", Toast.LENGTH_LONG).show();
                     clearCheck();
                 } else {
-                    textDialog(1, "Rename Hotspot", "Please Name Hotspot.");
+                    renameHotspotTextDialog("Rename Hotspot", "Please Name Hotspot.");
                 }
             }
         });
@@ -235,7 +236,49 @@ public class HotspotActivity extends AppCompatActivity {
         });
     }
 
-    private void textDialog(final int actionType, String title, String content) {
+    private void addHotspotTextDialog(String title, String content) {
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(title);
+        alert.setMessage(content);
+
+        LinearLayout lila1= new LinearLayout(this);
+        lila1.setOrientation(LinearLayout.VERTICAL); //1 is for vertical orientation
+        final EditText input = new EditText(this);
+        final EditText input1 = new EditText(this);
+        final EditText input2 = new EditText(this);
+        lila1.addView(input);
+        lila1.addView(input1);
+        lila1.addView(input2);
+        alert.setView(lila1);
+
+        alert.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String value = input.getText().toString();
+                Double longitude = Double.parseDouble(input1.getText().toString());
+                Double latitude = Double.parseDouble(input2.getText().toString());
+                if(value.trim().equals("")) {
+                    Toast.makeText(HotspotActivity.this, "Invalid hotspot name.", Toast.LENGTH_LONG).show();
+                    return;
+                } else if(longitude>0 && longitude < 180 && latitude>0 && latitude<90) {
+                    tryAddWithName(value, longitude, latitude);
+                } else {
+                    Toast.makeText(HotspotActivity.this, "Invalid longitude/latitude range.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+        });
+        alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Canceled.
+            }
+        });
+        alert.show();
+        Log.d("HJ Debug", "alert showed.");
+    }
+
+    private void renameHotspotTextDialog(String title, String content) {
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -250,12 +293,9 @@ public class HotspotActivity extends AppCompatActivity {
                 String value = input.getText().toString();
                 if(value.trim().equals("")) {
                     Toast.makeText(HotspotActivity.this, "Invalid hotspot name.", Toast.LENGTH_LONG).show();
+                    return;
                 } else {
-                    if (actionType == 0) {
-                        tryAddWithName(value);
-                    } else {
-                        tryRenameWithName(value);
-                    }
+                    tryRenameWithName(value);
                 }
             }
         });
@@ -268,14 +308,14 @@ public class HotspotActivity extends AppCompatActivity {
         Log.d("HJ Debug", "alert showed.");
     }
 
-    private void tryAddWithName(String name) {
+    private void tryAddWithName(String name, double longitude, double latitude) {
         for(String nm: items) {
             if(nm.equals(name)) {
                 Toast.makeText(this, "Same hotspot name already exists.", Toast.LENGTH_LONG).show();
                 return;
             }
         }
-        Hotspot h = new Hotspot(name, -1.1, -1.1, null);
+        Hotspot h = new Hotspot(name, longitude, latitude, null);
         mDatabase.child("hotspots").push().setValue(h);
     }
     private void tryRenameWithName(final String name) {
@@ -309,10 +349,6 @@ public class HotspotActivity extends AppCompatActivity {
     }
     private void tryDelete() {
         ArrayList<String> keys = getCheckedItemKeys();
-        ArrayList<String> selected_items = getCheckedItems();
-        for(int i=0; i<selected_items.size(); i++) {
-
-        }
         for(String k: keys) {
             mDatabase.child("hotspots").child(k).setValue(null);
         }
