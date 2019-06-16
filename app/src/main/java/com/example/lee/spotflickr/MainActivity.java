@@ -266,8 +266,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setPositiveButton("Photos",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        final double longitude = tmapview.getLocationPoint().getLongitude();
-                                        final double latitude = tmapview.getLocationPoint().getLatitude();
+                                        final double longitude = tMapMarkerItem.getTMapPoint().getLongitude();
+                                        final double latitude = tMapMarkerItem.getTMapPoint().getLatitude();
                                         retrofit2.Call<PhotoList> SearchPhotoCall = APIClient.getInstance().getService().Search_Photo(
                                                 "?method=flickr.photos.search&api_key=43e1b76fcd7e86e9d15001d16df34b7a&" + "sort=interestingness-desc&" + "accuracy=1&"+ "lat=" + latitude +
                                                         "&lon=" + longitude + "&radius="+ 0.5 +"&per_page=40&extras=geo%2Curl_s&format=json&nojsoncallback=1");
@@ -557,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
-  
+
     @Override
     public void onClick(View view) {
         if( view == btMyLocation) {
@@ -642,7 +642,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (view == btCamera) { //take photo.
             getPermission(permissions.get(4), 4);
-          
+
         }
         if (view == btMyHotPlace) {
             getPermission(permissions.get(3), 3);
