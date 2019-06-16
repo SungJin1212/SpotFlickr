@@ -32,9 +32,8 @@ import java.util.Iterator;
 // ImageActivity for image display
 /*
  */
-public class HotspotImageActivity extends AppCompatActivity implements View.OnClickListener {
+public class HotspotImageActivity extends AppCompatActivity {
 
-    private Button btnRename;
     // firebase
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
@@ -47,16 +46,6 @@ public class HotspotImageActivity extends AppCompatActivity implements View.OnCl
     private String filename;
     private double hotspotLongitude;
     private double hotspotLatitude;
-
-    private void setUI() {
-        //initializing views
-        btnRename = (Button)findViewById(R.id.buttonRename);
-    }
-
-    private void setButton() {
-        //button click event
-        btnRename.setOnClickListener(this);
-    }
 
     private void setFirebase() {
         //initializig firebase auth object
@@ -105,16 +94,7 @@ public class HotspotImageActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void init() {
-        setUI();
-        setButton();
         setFirebase();
-    }
-
-    @Override
-    public void onClick(View view) {
-        if(view ==btnRename) {
-            // TODO: prompt & renmae & toast
-        }
     }
 
     @Override
