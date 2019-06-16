@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,7 +42,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_profile_2);
+        setContentView(R.layout.activity_edit_profile);
         myAuth = FirebaseAuth.getInstance();
         init();
     }
@@ -81,7 +82,34 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         backButton.setOnClickListener(this);
     }
 
+    public void showNoticeDialog(String title, String message) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = PopUp.newInstance(title, message);
+        dialog.show(getSupportFragmentManager(), "LoginFragment");
+    }
+
+
     public void updatePassword(){
+
+        String npassword = newPassword.getText().toString().trim();
+        String repassword = repeatNewPassword.getText().toString().trim();
+        String curpassword = currentPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(npassword)) {
+            showNoticeDialog("Change account Error", "Please enter your new password");
+            return;
+        }
+        if (TextUtils.isEmpty(repassword)) {
+            showNoticeDialog("Change account Error", "Please enter your repeat new password");
+            return;
+        }
+        if (TextUtils.isEmpty(curpassword)) {
+            showNoticeDialog("Change account Error", "Please enter your correct current password");
+            return;
+        }
+
+
+
         if (newPassword.getText().toString().trim().equals(repeatNewPassword.getText().toString().trim())) {
             credential = EmailAuthProvider.getCredential(email, currentPassword.getText().toString().trim());
             user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -109,6 +137,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void deleteUserAccount(){
+        String password = verifyPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(password)) {
+            showNoticeDialog("Delete account Error", "Please enter your correct password");
+            return;
+        }
 
         credential = EmailAuthProvider.getCredential(email, verifyPassword.getText().toString().trim());
         user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
