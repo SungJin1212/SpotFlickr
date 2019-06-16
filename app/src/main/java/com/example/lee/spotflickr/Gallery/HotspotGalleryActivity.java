@@ -51,6 +51,7 @@ import java.util.Iterator;
 public class HotspotGalleryActivity extends AppCompatActivity {
     private Context context = this;
     private Button btnLoadLocal;
+    private Button btnRoute;
     private Button btnRemove;
     int PICK_IMAGE_MULTIPLE = 1;
     private GridView gvGallery;
@@ -89,7 +90,6 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        //multiselect implementation TODO: test required
         gvGallery.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -206,6 +206,7 @@ public class HotspotGalleryActivity extends AppCompatActivity {
 
         // setup objects
         btnLoadLocal = findViewById(R.id.btnLoadLocal);
+        btnRoute = findViewById(R.id.btnRoute);
         btnRemove = findViewById(R.id.btnRemove);
         gvGallery = (GridView)findViewById(R.id.gv);// activity_gallery.xml에서 선언한 Gallery를 연결
 
@@ -230,6 +231,13 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
+            }
+        });
+        btnRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: pass param - main, no finish
+
             }
         });
         // remove function - remove checked images from user storage and firebase
@@ -293,7 +301,6 @@ public class HotspotGalleryActivity extends AppCompatActivity {
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                             // ...
 
-                            // TODO: making thumbnail function
                             //Uri thumbnailUri = thumbnailURIFromOriginalURI(uri);
                             Uri thumbnailUri = uri;
                             if(thumbnailUri==null)

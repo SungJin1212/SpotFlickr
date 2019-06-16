@@ -27,19 +27,5 @@
             android:layout_weight="1"
             android:text="Rename" />
 
-        <Button
-            android:id="@+id/buttonDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Delete" />
-
-        <Button
-            android:id="@+id/buttonRoute"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Route" />
-
     </LinearLayout>
 </RelativeLayout>

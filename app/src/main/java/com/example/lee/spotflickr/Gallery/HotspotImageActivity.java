@@ -31,19 +31,10 @@ import java.util.Iterator;
 
 // ImageActivity for image display
 /*
-    TODO: get parameter from GalleryActivity, or map
-        TODO: if parameter related to local storage, get image data and show it.
-            TODO: show image and sync firebase. If such file not exists in local storage, request it to firebase and save it to the user storage
-            TODO: delete button: delete image from firebase and user storage
-            TODO: upload to flickr button: try upload to flickr
-        TODO: if parameter related to flickr, request image data and show it.
-            TODO: download button: download image related data to firebase and user storage
  */
 public class HotspotImageActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button btnRename;
-    private Button btnDelete;
-    private Button btnRoute;
     // firebase
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
@@ -60,15 +51,11 @@ public class HotspotImageActivity extends AppCompatActivity implements View.OnCl
     private void setUI() {
         //initializing views
         btnRename = (Button)findViewById(R.id.buttonRename);
-        btnDelete = (Button)findViewById(R.id.buttonDelete);
-        btnRoute = (Button)findViewById(R.id.buttonRoute);
     }
 
     private void setButton() {
         //button click event
         btnRename.setOnClickListener(this);
-        btnDelete.setOnClickListener(this);
-        btnRoute.setOnClickListener(this);
     }
 
     private void setFirebase() {
@@ -126,11 +113,7 @@ public class HotspotImageActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View view) {
         if(view ==btnRename) {
-
-        } else if(view == btnDelete) {
-
-        } else if(view==btnRoute) {
-
+            // TODO: prompt & renmae & toast
         }
     }
 
